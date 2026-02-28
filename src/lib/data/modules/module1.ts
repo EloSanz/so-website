@@ -96,37 +96,36 @@ export const module1: Module = {
     examQuestions: [
         {
             type: 'V/F',
-            question: 'Los compiladores permiten convertir un programa en proceso.',
+            question: 'La concurrencia y el paralelismo son exactamente el mismo concepto y requieren de múltiples procesadores para funcionar.',
             answer: 'Falso',
-            explanation: 'Los compiladores convierten el código fuente en un programa objeto. Es el Link-Editor el que genera el ejecutable, el cual al cargarse en memoria forma los procesos.'
+            explanation: 'Son distintos. La concurrencia da la ilusión de simultaneidad intercalando tareas muy rápido (puede ocurrir en un solo núcleo mediante multiprogramación). El paralelismo implica que dos o más tareas se ejecutan físicamente al mismo tiempo real, lo cual requiere hardware multi-núcleo o multiprocesador.'
         },
         {
             type: 'V/F',
-            question: 'Para que se necesite la comunicación entre procesos, es necesario un sistema de multiprocesamiento.',
+            question: 'En una arquitectura NUMA, todos los procesadores acceden a todas las partes de la memoria principal exactamente a la misma velocidad.',
             answer: 'Falso',
-            explanation: 'Lo que se necesita es que el sistema sea MULTIPROGRAMABLE (concurrente), aunque tenga un solo procesador.'
+            explanation: 'Ese es el modelo UMA (Uniform Memory Access). En NUMA (Non-Uniform Memory Access), cada procesador tiene memoria local que es mucho más rápida de acceder que la memoria conectada a los otros procesadores.'
         },
         {
             type: 'V/F',
-            question: 'En un sistema monoproceador multiprogramado, el SO puede atender una o más interrupciones en forma simultánea.',
-            answer: 'Falso',
-            explanation: 'No puede atenderlas en paralelo. Debe atender primero una y luego la otra, ya que solo cuenta con un procesador.'
-        },
-        {
-            type: 'V/F',
-            question: 'Es posible que se produzca una interrupción de impresora, una syscall y una interrupción interna al mismo tiempo en un monoprocesador.',
-            answer: 'Falso',
-            explanation: 'No pueden producirse una interrupción interna y una syscall al mismo tiempo porque hay un único proceso corriendo. En un multiprocesador sí podría pasar (una en cada core).'
+            question: 'Un fallo en el driver de video en un Sistema Operativo Monolítico puro provocará la caída total (Kernel Panic / Pantalla Azul) del sistema.',
+            answer: 'Verdadero',
+            explanation: 'En un SO Monolítico, los drivers y el kernel se ejecutan en el mismo espacio vital de memoria (kernel space). Si falla un componente, corrompe toda la estructura y hace caer todo el sistema.'
         },
         {
             type: 'Desarrollo',
-            question: 'Explique brevemente la técnica de spooling, sus ventajas y aplicaciones.',
-            answer: 'El spooling (Simultaneous Peripheral Operations On-Line) usa el disco como buffer para dispositivos lentos. Permite que la CPU mande múltiples peticiones (ej. imprimir 5 archivos) y siga con su laburo sin esperar a que el fierro termine.',
+            question: '¿Cuál es la principal diferencia entre un Sistema de Tiempo Real Crítico (Hard RT) y uno Blando (Soft RT)?',
+            answer: 'En el Tiempo Real Crítico (Hard RT), no cumplir un deadline exacto (tardar de más) implica una falla catastrófica del sistema (ej. un freno ABS o un marcapasos). En el Blando (Soft RT), si se pasa el deadline, se degrada la calidad del servicio pero el sistema no colapsa (ej. un poco de lag en un streaming de video).',
         },
         {
             type: 'Desarrollo',
-            question: '¿Qué es el vector de interrupciones?',
-            answer: 'Es una tabla en memoria donde el SO tiene anotadas las direcciones de los "handlers" o RAI (Rutina de Atención a Interrupción) correspondientes a cada IRQ.',
+            question: 'Compará la técnica de Polling (encuesta permanente) contra el uso de Interrupciones.',
+            answer: 'En el Polling, el procesador gasta ciclos constantemente preguntando a los periféricos si necesitan atención, perdiendo muchísimo tiempo de trabajo útil. Con el modelo de Interrupciones, la CPU hace lo suyo hasta que un dispositivo le envía una señal física forzándola a detenerse y atender el requerimiento, optimizando radicalmente el uso del tiempo.',
+        },
+        {
+            type: 'Desarrollo',
+            question: 'Explicá qué sucede cuando se presiona una tecla o llega una interrupción de hardware, utilizando el concepto de Vector de Interrupciones.',
+            answer: 'El hardware envía una señal (IRQ), la CPU interrumpe lo que está haciendo, guarda su contexto para no perder datos, y utiliza esa IRQ para consultar el Vector de Interrupciones. Esta es una tabla en RAM de donde obtiene la dirección exacta en memoria de la Rutina de Atención a Interrupción (RAI o handler) para ese dispositivo. Luego, ejecuta ese código y vuelve a lo que estaba haciendo.',
         }
     ],
     lab: {
