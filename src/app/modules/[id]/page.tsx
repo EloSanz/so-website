@@ -4,11 +4,15 @@ import { CodeExample } from "@/components/CodeExample";
 import { TableOfContents } from "@/components/TableOfContents";
 import { learningPlan } from "@/lib/data/learningPlan";
 import { notFound } from "next/navigation";
-import { Code2, Terminal, Play, Cpu, Info, ArrowLeft, Home, Activity, ChevronRight, BookOpen, HelpCircle, CheckCircle2, XCircle, Zap } from "lucide-react";
+import { Code2, Terminal, Play, Cpu, Info, ArrowLeft, Home, Activity, ChevronRight, BookOpen, HelpCircle, CheckCircle2, XCircle, Zap, FlaskConical } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { AnimationLab } from "@/components/animations";
 import { parseTextWithTerms } from "@/lib/utils/textParser";
+import { GuidedLab } from "@/components/GuidedLab";
+import { StudentDebate } from "@/components/StudentDebate";
+import { PracticalChallenge } from "@/components/PracticalChallenge";
+import { LabTrigger } from "@/components/LabTrigger";
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -173,67 +177,31 @@ export default async function ModulePage({ params }: Props) {
                             </div>
                         </section>
 
-                        {/* Exam Questions Section */}
-                        {module.examQuestions && module.examQuestions.length > 0 && (
-                            <section id="practice" className="relative md:pl-16 scroll-mt-24 group">
-                                <div className="absolute left-0 top-0 w-8 h-8 rounded-full border border-orange-500/50 bg-orange-500/5 flex items-center justify-center text-xs font-bold text-orange-500 hidden md:flex z-10 transition-transform group-hover:scale-110">
-                                    <Zap className="w-4 h-4" />
-                                </div>
-
-                                <div className="space-y-8">
-                                    <div className="flex flex-col gap-2">
-                                        <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
-                                            <span className="md:hidden w-6 h-6 rounded-full bg-orange-500/10 flex items-center justify-center text-[10px] text-orange-500">
-                                                <Zap className="w-3 h-3" />
-                                            </span>
-                                            Simulacro de Examen
-                                        </h2>
-                                        <p className="text-muted-foreground text-sm">Ponele el pecho a estas preguntas que son fija de parcial.</p>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 gap-6">
-                                        {module.examQuestions.map((q, i) => (
-                                            <QuestionCard key={i} q={q as any} />
-                                        ))}
-                                    </div>
-                                </div>
-                            </section>
+                        {module.conversation && (
+                            <StudentDebate conversation={module.conversation} />
                         )}
 
-                        {/* Lab Section */}
-                        <section id="lab" className="relative md:pl-16 scroll-mt-24 group">
+
+                        {/* Lab & Challenge Section */}
+                        <section id="challenge" className="relative md:pl-16 scroll-mt-24 group">
                             <div className="absolute left-0 top-0 w-8 h-8 rounded-full border border-primary/50 bg-primary/5 flex items-center justify-center text-xs font-bold text-primary hidden md:flex z-10 transition-transform group-hover:scale-110">
-                                <Code2 className="w-4 h-4" />
+                                <FlaskConical className="w-4 h-4" />
                             </div>
 
                             <div className="space-y-6">
                                 <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
                                     <span className="md:hidden w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px]">
-                                        <Code2 className="w-3 h-3" />
+                                        <FlaskConical className="w-3 h-3" />
                                     </span>
-                                    Desafío Práctico: {module.lab.language}
+                                    {module.guidedLabs && module.guidedLabs.length > 0 ? "Laboratorio Guiado" : `Desafío Práctico: ${module.lab.language}`}
                                 </h2>
 
-                                <div className="p-8 rounded-3xl bg-foreground text-background relative overflow-hidden group/lab border border-border shadow-2xl">
-                                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover/lab:opacity-10 transition-opacity">
-                                        <Terminal className="w-32 h-32 -rotate-12" />
-                                    </div>
-                                    <div className="relative z-10 space-y-6">
-                                        <p className="text-lg font-medium opacity-90 leading-relaxed">
-                                            {module.lab.task}
-                                        </p>
-                                        <div className="flex flex-col sm:flex-row gap-4">
-                                            <button className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-background text-foreground font-bold hover:scale-[1.05] transition-transform active:scale-95">
-                                                <Play className="w-4 h-4 fill-current" />
-                                                Darle masa al lab
-                                            </button>
-                                            <Link href="/" className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-background/10 text-background border border-background/20 font-bold hover:bg-background/20 transition-all">
-                                                <BookOpen className="w-4 h-4" />
-                                                Ver Guía Completa
-                                            </Link>
-                                        </div>
-                                    </div>
-                                </div>
+                                <LabTrigger
+                                    language={module.lab.language}
+                                    task={module.guidedLabs && module.guidedLabs.length > 0 ? module.guidedLabs[0].title : module.lab.task}
+                                    challenge={module.challenge}
+                                    guidedLab={module.guidedLabs && module.guidedLabs.length > 0 ? module.guidedLabs[0] : undefined}
+                                />
                             </div>
                         </section>
                     </div>
@@ -241,7 +209,7 @@ export default async function ModulePage({ params }: Props) {
             </main>
 
             {/* Right Sidebar - "On this page" TOC */}
-            <TableOfContents topics={mainTopics} />
+            <TableOfContents topics={mainTopics} hasConversation={!!module.conversation} />
         </div>
     );
 }

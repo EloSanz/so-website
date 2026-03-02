@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Activity, Zap, Code2 } from 'lucide-react';
+import { Activity, Zap, Code2, MessageCircle, Trophy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSidebar } from './SidebarContext';
+import { ReadingProgress } from './ReadingProgress';
 
 interface TOCItem {
     id: string;
@@ -13,9 +14,10 @@ interface TOCItem {
 
 interface TableOfContentsProps {
     topics: TOCItem[];
+    hasConversation?: boolean;
 }
 
-export const TableOfContents: React.FC<TableOfContentsProps> = ({ topics }) => {
+export const TableOfContents: React.FC<TableOfContentsProps> = ({ topics, hasConversation }) => {
     const [activeId, setActiveId] = useState<string>('');
     const { isZenMode } = useSidebar();
 
@@ -38,13 +40,13 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({ topics }) => {
             if (el) observer.observe(el);
         });
 
-        ['animation', 'practice', 'lab'].forEach((id) => {
+        ['animation', 'debate', 'challenge', 'practice'].forEach((id) => {
             const el = document.getElementById(id);
             if (el) observer.observe(el);
         });
 
         return () => observer.disconnect();
-    }, [topics, isZenMode]);
+    }, [topics, isZenMode, hasConversation]);
 
     if (isZenMode) return null;
 
@@ -81,6 +83,20 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({ topics }) => {
                             <Activity className={cn("w-3 h-3 transition-colors", activeId === 'animation' ? "text-primary" : "text-primary/40")} />
                             Simulaciones
                         </Link>
+                        {hasConversation && (
+                            <Link
+                                href="#debate"
+                                className={cn(
+                                    "text-sm px-4 py-2 transition-all duration-300 flex items-center gap-2 border-l-2 -ml-[2px]",
+                                    activeId === 'debate'
+                                        ? "text-primary border-primary bg-primary/5 font-bold translate-x-1"
+                                        : "text-muted-foreground border-transparent hover:text-foreground hover:bg-muted/30"
+                                )}
+                            >
+                                <MessageCircle className={cn("w-3 h-3 transition-colors", activeId === 'debate' ? "text-primary" : "text-primary/40")} />
+                                Debate
+                            </Link>
+                        )}
 
                         <Link
                             href="#practice"
@@ -96,19 +112,18 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({ topics }) => {
                         </Link>
 
                         <Link
-                            href="#lab"
+                            href="#challenge"
                             className={cn(
                                 "text-sm px-4 py-2 transition-all duration-300 flex items-center gap-2 border-l-2 -ml-[2px] pt-4 mt-2 border-t border-t-border/50",
-                                activeId === 'lab'
-                                    ? "text-primary border-primary bg-primary/5 font-bold translate-x-1"
-                                    : "text-foreground/70 border-transparent hover:text-primary hover:bg-muted/30"
+                                activeId === 'challenge'
+                                    ? "text-amber-500 border-amber-500 bg-amber-500/5 font-bold translate-x-1"
+                                    : "text-muted-foreground border-transparent hover:text-foreground hover:bg-muted/30"
                             )}
                         >
-                            <div className={cn("p-1 rounded transition-colors", activeId === 'lab' ? "bg-primary/20" : "bg-primary/5")}>
-                                <Code2 className={cn("w-3 h-3", activeId === 'lab' ? "text-primary" : "text-primary/60")} />
-                            </div>
-                            Laboratorio
+                            <Trophy className={cn("w-3 h-3 transition-colors", activeId === 'challenge' ? "text-amber-500" : "text-amber-500/40")} />
+                            Desafío
                         </Link>
+                        <ReadingProgress activeId={activeId} topics={topics} />
                     </nav>
                 </div>
             </div>

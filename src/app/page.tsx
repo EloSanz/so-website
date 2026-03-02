@@ -15,17 +15,36 @@ export default function Home() {
         <p className="text-xl text-muted-foreground leading-relaxed">
           Si llegaste hasta acá, preparate el mate porque lo que viene es un viaje de ida al corazón del Kernel. No es para cualquiera, pero si entendés esto, el Final es tuyo (bueno, casi).
         </p>
+
+        <div className="p-8 rounded-[2.5rem] bg-primary/5 border border-primary/10 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:rotate-12 transition-transform duration-500">
+            <Terminal className="w-16 h-16 text-primary" />
+          </div>
+          <div className="relative z-10 space-y-4">
+            <h2 className="text-2xl font-bold text-foreground">¿Por qué sufrir con Sistemas Operativos, Punteros y C?</h2>
+            <p className="text-muted-foreground leading-relaxed text-base">
+              Saber de <strong className="text-foreground font-bold italic">indirección, gestión de memoria y punteros</strong> no es solo para pasar la materia. Es lo que te define como un <strong className="text-foreground font-bold italic text-primary/90">buen profesional de backend</strong>. Dominar estos conceptos te va a dar una ventaja competitiva brutal al trabajar con <span className="font-bold text-primary">Java (Spring Boot), Python o Go</span>.
+            </p>
+            <p className="text-sm text-muted-foreground/80 italic">
+              "En las entrevistas de trabajo y en la optimización de sistemas críticos, el que entiende qué pasa debajo del capó es el que marca la diferencia."
+            </p>
+          </div>
+        </div>
+
         <div className="flex gap-4">
           <Link
             href="/modules/1"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-foreground text-background font-bold hover:scale-[1.02] transition-all"
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-foreground text-background font-bold hover:scale-[1.02] transition-all shadow-xl shadow-foreground/10"
           >
             Empezar la Carrera
             <ArrowRight className="w-4 h-4" />
           </Link>
-          <button className="px-6 py-3 rounded-2xl bg-muted font-bold hover:bg-border transition-colors">
+          <Link
+            href="/modules/1"
+            className="px-8 py-4 rounded-2xl bg-muted font-bold hover:bg-border transition-colors border border-border/50"
+          >
             ¿Qué onda la materia?
-          </button>
+          </Link>
         </div>
       </div>
 

@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sistemas Operativos - Deep Dive 🚀
 
-## Getting Started
+Una plataforma educativa moderna, interactiva y "al hueso" para entender cómo corren los sistemas operativos por dentro. Sin vueltas, con simuladores reales y laboratorios prácticos.
 
-First, run the development server:
+## 📚 Currículum del Curso
+
+El proyecto está estructurado en 6 módulos clave, diseñados para llevarte de "no entiendo nada de hardware" a "puedo buildear mi propio shell":
+
+1. **Módulo 1: Arquitectura y el Kernel** - El laburo sucio del kernel, traps, interrupciones y el vector de interrupciones.
+2. **Módulo 2: Administración de Procesos** - Forks, execs, waits y el ciclo de vida de un proceso (New, Ready, Running, Waiting, Terminated).
+3. **Módulo 3: Planificación de CPU (Scheduling)** - Round Robin, SJF (Shortest Job First) y cómo el SO reparte el tiempo de cómputo.
+4. **Módulo 4: Concurrencia y Sincronismo** - Race conditions, semáforos, mutex y el drama de los filósofos comensales (Deadlocks).
+5. **Módulo 5: Administración de Memoria** - Paginación, segmentación y la magia de la Memoria Virtual.
+6. **Módulo 6: Sistemas de Entradas/Salidas** - Drivers, manejadores de interrupciones y cómo el SO habla con el disco y el teclado.
+
+## ✨ Características Principales
+
+- **Simuladores Interactivos**: Visualizá algoritmos complejos como Round Robin o Paginación de Memoria en tiempo real con componentes construidos en Framer Motion.
+- **Laboratorios Guiados**: Guías paso a paso para laboratorios en C y Shell.
+- **Preguntas de Examen**: Cuestionarios integrados al final de cada módulo para validar lo aprendido (V/F y Desarrollo).
+- **Glosario Dinámico**: Términos técnicos explicados de forma sencilla y directa.
+
+## 🛠️ Stack Tecnológico
+
+- **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+- **Lógica**: React 19 & TypeScript
+- **Animaciones**: Framer Motion & Lucide Icons
+- **Estilos**: TailwindCSS / CSS Modules
+- **QA & Calidad**: [React Doctor](https://react.doctor) (Utilizado para asegurar que el código siga las mejores prácticas de la industria).
+
+## 🚀 Empezando
+
+Primero, instalá las dependencias:
+
+```bash
+npm install
+```
+
+Luego, corre el servidor de desarrollo:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abrí [http://localhost:3000](http://localhost:3000) en tu navegador para ver el resultado.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+*Desarrollado con ❤️ para estudiantes de Sistemas Operativos que quieren entender qué pasa atrás de la pantalla.*

@@ -24,10 +24,10 @@ export const module1: Module = {
             id: 'multiprocesamiento',
             title: 'Multiproceso y Memoria',
             content: {
-                description: '¿Varios núcleos o varias CPUs? ¿Comparten todo o cada uno con su rancho? Acá se define la potencia real.',
+                description: '¿Quién manda acá? El multiprocesamiento define si hay una **jerarquía** entre los procesadores o si son todos iguales. Esto afecta tanto a quién decide qué proceso corre cada uno, como a la forma en que acceden a la memoria RAM.',
                 items: [
-                    'Simétrico (SMP) vs Asimétrico: En SMP todos son iguales; en Asimétrico hay un "Master" y varios "Slaves" (como una GPU).',
-                    'UMA vs NUMA: UMA es igualdad para todos; NUMA le da a cada CPU su banco de RAM rápido (ideal para servidores gigantes).',
+                    'Simétrico (SMP) vs Asimétrico: En SMP todos los procesadores son "colegas" (iguales); cualquiera puede ejecutar cualquier tarea del SO y todos ven la misma RAM. En Asimétrico (Master-Slave), un procesador jefe reparte el laburo y los demás obedecen, manejando tareas específicas.',
+                    'UMA vs NUMA: [[UMA|Uniform Memory Access]] es "igualdad para todos", donde cualquier CPU tarda lo mismo en acceder a cualquier parte de la RAM. En [[NUMA|Non-Uniform Memory Access (cada CPU tiene su propio rancho local)]], cada CPU tiene su propio banco de memoria local más rápido.',
                     'Concurrencia vs Paralelismo: Ojo acá. Concurrencia es alternar rápido (sensación de simultaneidad); Paralelismo es hacer dos cosas al mismo tiempo de verdad.',
                     'Cómputo Distribuido: Clústers (mismo lugar, alta velocidad) vs Grids (lejos, heterogéneos) y la Nube.'
                 ],
@@ -86,12 +86,16 @@ export const module1: Module = {
                     'Vector de Interrupciones: Una tabla en memoria que tiene las direcciones de las [[RAI (ES) / ISR (EN) | Rutina de Atención a Interrupción]].',
                     '[[RAI | Rutina de Atención a Interrupción]]: Es el pedazo de código del kernel que sabe qué hacer cuando llega un grito específico del hardware.',
                     'Traps (Excepciones): Cuando el software se manda una macana (ej. dividir por cero), el hardware genera un Trap para que el kernel tome el control.',
-                    'Salvado de Contexto: Antes de atender el grito, el SO guarda qué estaba haciendo para poder volver después sin romper nada.'
+                    'Salvado de Contexto: Antes de atender el grito, el SO guarda qué estaba haciendo para poder volver después sin romper nada.',
+                    'Interrupciones Enmascarables: La CPU puede "ignorar" o postergar estas señales si está haciendo algo muy importante (se usa un Bit de Máscara). Típico de E/S común.',
+                    'Interrupciones No Enmascarables (NMI): Son "gritos" que no se pueden ignorar. Se reservan para eventos críticos como errores de paridad de memoria o fallos de energía (Power Failure).',
+                    'Manejo Secuencial: Las interrupciones se atienden de a una. Si llega una mientras se atiende otra, queda pendiente hasta que la actual termine. Simple, pero rígido.',
+                    'Manejo Anidado (Nesting): Una interrupción de mayor prioridad puede interrumpir a la actual. Es vital para sistemas de tiempo real donde el teclado no puede esperar a que termine la impresora.',
+                    'Prioridades: El hardware (como el [[ PIC | Programmable Interrupt Controller: Chip encargado de gestionar las interrupciones de hardware y enviarlas a la CPU según su prioridad. ]] o [[ APIC | Advanced Programmable Interrupt Controller: Versión avanzada y multinúcleo del PIC, necesaria para sistemas modernos y SMP. ]]) decide quién pasa primero basándose en niveles de prioridad fijos o configurables.'
                 ],
-                highlight: 'Pregunta de Final: ¿Qué es la [[RAI | Rutina de Atención a Interrupción]]? Es la Rutina de Atención a Interrupción. El Vector de Interrupciones es el índice, y la RAI es el contenido.'
+                highlight: 'Dato de Final: ¿Pueden ocurrir a la vez? Sí, pero se atienden según la **Prioridad**. Si son de igual prioridad, suele ganar la que llegó primero o la que tiene el número de IRQ más bajo.'
             }
         },
-        { id: 'lab', title: 'Laboratorio de Shell' },
     ],
     examQuestions: [
         {
@@ -126,11 +130,114 @@ export const module1: Module = {
             type: 'Desarrollo',
             question: 'Explicá qué sucede cuando se presiona una tecla o llega una interrupción de hardware, utilizando el concepto de Vector de Interrupciones.',
             answer: 'El hardware envía una señal (IRQ), la CPU interrumpe lo que está haciendo, guarda su contexto para no perder datos, y utiliza esa IRQ para consultar el Vector de Interrupciones. Esta es una tabla en RAM de donde obtiene la dirección exacta en memoria de la Rutina de Atención a Interrupción (RAI o handler) para ese dispositivo. Luego, ejecuta ese código y vuelve a lo que estaba haciendo.',
+        },
+        {
+            type: 'V/F',
+            question: '¿Una interrupción de tipo NMI (Non-Maskable Interrupt) puede ser ignorada por el procesador si este se encuentra ejecutando una sección crítica de código?',
+            answer: 'Falso',
+            explanation: 'Las NMI, por definición, no son enmascarables. El hardware de la CPU garantiza que se atiendan de forma inmediata, ya que suelen estar asociadas a fallos críticos de hardware (como pérdida de energía o errores de memoria) que no permiten postergación.'
+        },
+        {
+            type: 'V/F',
+            question: 'En el manejo secuencial de interrupciones, ¿una interrupción de alta prioridad puede detener la ejecución de una RAI de baja prioridad que ya estaba en curso?',
+            answer: 'Falso',
+            explanation: 'Eso ocurre en el manejo ANIDADO. En el secuencial, las interrupciones se atienden estrictamente de a una; cualquier otra interrupción queda pendiente hasta que la actual finalice, sin importar su prioridad.'
+        },
+        {
+            type: 'Desarrollo',
+            question: '¿Cuáles son las dos condiciones principales para que ocurra el anidamiento (nesting) de interrupciones?',
+            answer: '1. Que la nueva interrupción tenga un nivel de prioridad MAYOR a la que se está ejecutando. 2. Que el sistema (hardware y SO) soporte y tenga habilitadas las interrupciones anidadas, permitiendo que la CPU sea interrumpida mientras ya está dentro de una RAI.'
         }
     ],
     lab: {
         language: 'C (A puro pulmón)',
         task: 'Armate un mini-shell que no se rompa al primer fork(). Si no usás wait() te quedan procesos zombie y el profe te liquida.',
+    },
+    conversation: {
+        id: 'debate-kernel',
+        title: 'La Gran Pelea: Monolítico vs Microkernel',
+        topic: 'Tanenbaum vs Torvalds (1992 USENET Archive)',
+        messages: [
+            {
+                role: 'expert',
+                name: 'Andrew Tanenbaum',
+                message: 'Linus, Linux es un anacronismo. Escribir un kernel monolítico en 1991 es un error de diseño gigante. Es como volver a los 70. El futuro es el Microkernel: modular, elegante y robusto. Linux es obsoleto antes de nacer.',
+            },
+            {
+                role: 'student',
+                name: 'Linus Torvalds',
+                message: 'Andrew, desde un punto de vista teórico-académico, capaz tenés razón. Pero desde el punto de vista práctico, los microkernels son un desastre de performance. Linux funciona ACÁ Y AHORA, y es rápido. Tus microkernels son un sueño de laboratorio que nadie usa.',
+                isRight: true,
+            },
+            {
+                role: 'expert',
+                name: 'Andrew Tanenbaum',
+                message: '¡La performance no es excusa para un diseño pobre! Si un driver de video falla en Linux, se cae TODO el sistema. En un Microkernel, el driver es un proceso más. La seguridad y la portabilidad valen más que unos milisegundos.',
+            },
+            {
+                role: 'student',
+                name: 'Linus Torvalds',
+                message: 'Portabilidad es lo que hacés cuando no podés hacer que tu SO corra bien en ningún lado. Mi kernel es monolítico porque es lo que hace que el hardware rinda al máximo. Avísame cuando MINIX sea algo más que un juguete para estudiantes de Sistemas.',
+                isRight: true,
+            }
+        ],
+        conclusion: {
+            winner: 'Linus Torvalds',
+            explanation: 'Aunque Tanenbaum tenía razón técnica sobre la robustez (Microkernel), Linus ganó "en la calle". El enfoque pragmático y performante del kernel monolítico de Linux permitió que escalara y dominara el mundo, mientras que los microkernels puros quedaron relegados a nichos específicos o investigación, demostrando que en Sistemas Operativos, la velocidad y la adopción real mandan sobre la elegancia teórica.'
+        }
+    },
+    challenge: {
+        id: 'shell-basico',
+        title: 'Desafío Práctico: C (A puro pulmón)',
+        description: 'Implementar un mini-shell básico en C que use fork(), execvp() y wait().',
+        task: 'Tu tarea es escribir un programa en C que lea una línea de comando del usuario, cree un proceso hijo para ejecutar ese comando y espere a que termine antes de pedir el siguiente comando. El shell debe terminar si el usuario escribe "exit".',
+        hints: [
+            'Usá `fgets` para leer la entrada del usuario.',
+            'Recordá limpiar el salto de línea (`\\n`) al final del comando.',
+            'Usá `strtok` para separar el comando de sus argumentos.',
+            'No te olvides del `wait(NULL)` para evitar procesos zombies.'
+        ],
+        solutionCode: {
+            language: 'c',
+            code: `#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+int main() {
+    char command[100];
+    char *args[10];
+
+    while (1) {
+        printf("so-shell> ");
+        if (fgets(command, sizeof(command), stdin) == NULL) break;
+        
+        // Limpiar el \\n
+        command[strcspn(command, "\\n")] = 0;
+
+        if (strcmp(command, "exit") == 0) break;
+
+        if (fork() == 0) {
+            // Proceso Hijo
+            char *token = strtok(command, " ");
+            int i = 0;
+            while (token != NULL) {
+                args[i++] = token;
+                token = strtok(NULL, " ");
+            }
+            args[i] = NULL;
+            execvp(args[0], args);
+            perror("Error en execvp");
+            exit(1);
+        } else {
+            // Proceso Padre
+            wait(NULL);
+        }
+    }
+    return 0;
+}`
+        }
     },
     animations: [
         {
