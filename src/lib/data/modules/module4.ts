@@ -106,11 +106,23 @@ export const module4: Module = {
             id: 'deadlock',
             title: 'Simulador de Deadlock',
             description: 'Visualizá un Grafo de Asignación de Recursos y detectá ciclos mortales.',
+            instructions: [
+                'Añadí procesos y recursos al sistema mediante los controles.',
+                'Creá aristas de "Asignación" (el recurso lo tiene el proceso) o "Petición".',
+                'Ejecutá el algoritmo de detección paso a paso.',
+                'Observá si se forma un ciclo resaltado en rojo, lo que indica un abrazo mortal (Deadlock).'
+            ],
         },
         {
             id: 'producer-consumer',
             title: 'Productor - Consumidor',
             description: 'Mirá cómo el buffer acotado y los semáforos controlan el flujo de datos.',
+            instructions: [
+                'Hacé que el productor inserte "items" en el buffer compartido.',
+                'Hacé que el consumidor extraiga "items".',
+                'Observá los valores de los semáforos: `empty`, `full` y el `mutex`.',
+                'Tratá de consumir cuando el buffer está vacío o producir cuando está lleno para ver cómo se bloquean.'
+            ],
         }
     ],
     examQuestions: [

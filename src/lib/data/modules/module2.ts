@@ -193,7 +193,13 @@ export const module2: Module = {
         {
             id: 'process-states',
             title: 'El Baile de los Estados',
-            description: 'Interactuá con un proceso para verlo saltar entre Listo, Ejecución y Bloqueado según las interrupciones que le tires.'
+            description: 'Interactuá con un proceso para verlo saltar entre Listo, Ejecución y Bloqueado según las interrupciones que le tires.',
+            instructions: [
+                'Iniciá un nuevo proceso para que pase a la cola de "Listos" (Ready).',
+                'El planificador (Scheduler) elegirá el proceso para pasar a "Ejecución" (Running).',
+                'Usá los controles para generar eventos, como Input/Output (I/O).',
+                'Observá cómo los procesos se bloquean y luego regresan a la cola de listos.'
+            ]
         }
     ],
     guidedLabs: [

@@ -6,3 +6,6 @@ export { default as MemoryPagingAnimation } from './MemoryPagingAnimation';
 export { default as DiskSchedulingAnimation } from './DiskSchedulingAnimation';
 export { default as AnimationLab } from './AnimationLab';
 export { default as SJFAnimation } from './SJFAnimation';
+export { default as DemandPagingAnimation } from './DemandPagingAnimation';
+export { default as BeladyAnimation } from './BeladyAnimation';
+export { default as MMUTranslatorAnimation } from './MMUTranslatorAnimation';

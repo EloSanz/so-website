@@ -124,17 +124,34 @@ export const module3: Module = {
         {
             id: 'rr',
             title: 'Simulador Round Robin',
-            description: 'Mirá cómo el Quantum afecta la cola de listos y el tiempo de respuesta.'
+            description: 'Mirá cómo el Quantum afecta la cola de listos y el tiempo de respuesta.',
+            instructions: [
+                'Ajustá el "Quantum" usando el control numérico para ver cómo impacta el tamaño de la ráfaga de tiempo.',
+                'Agregá nuevos procesos a la cola de listos.',
+                'Iniciá la simulación usando los controles de reproducción y observá los turnos en la CPU.',
+                'Analizá las métricas de "Tiempo de Retorno" promedio.'
+            ]
         },
         {
             id: 'sjf',
             title: 'Algoritmo SJF',
-            description: 'El más cortito pasa primero. Mirá cómo se reordena la cola según la ráfaga.'
+            description: 'El más cortito pasa primero. Mirá cómo se reordena la cola según la ráfaga.',
+            instructions: [
+                'Agregá diferentes procesos con distintas necesidades de tiempo de ráfaga de CPU (estimaciones cortas y largas).',
+                'Iniciá la simulación y observá el comportamiento.',
+                'Comprobá cómo la cola se re-ordena dinámicamente dando prioridad al proceso más corto.',
+                'Pausá o avanzá paso a paso para ver los instantes de decisión.'
+            ]
         },
         {
             id: 'gantt',
             title: 'Visualizador de Gantt',
-            description: 'Proximamente: Comparativa de algoritmos en tiempo real.'
+            description: 'Proximamente: Comparativa de algoritmos en tiempo real.',
+            instructions: [
+                'Seleccioná los procesos que querés incluir en la simulación.',
+                'Al apretar generar, el diagrama de Gantt ilustrará cómo se intercalan.',
+                'Analizá los picos de CPU vs tiempos ociosos.'
+            ]
         }
     ],
     examQuestions: [

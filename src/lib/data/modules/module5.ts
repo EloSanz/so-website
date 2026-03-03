@@ -77,6 +77,67 @@ export const module5: Module = {
                 ],
                 highlight: 'Un buen sistema de Memoria Virtual es lo que hace que tu PC no muera cuando abrís 50 pestañas de Chrome.'
             }
+        },
+        {
+            id: 'paginacion-bajo-demanda',
+            title: 'Paginación Bajo Demanda (Demand Paging)',
+            content: {
+                description: '¿Para qué cargar todo un programa en RAM si capaz solo usás el 20%? La idea es simple: cargá solo lo que necesitás, cuando lo necesitás.',
+                items: [
+                    '[[Demand Paging|Paginación bajo demanda: técnica donde las páginas de un proceso se cargan en RAM solo cuando son referenciadas por primera vez, no al inicio.]]: En vez de cargar todo el ejecutable al hacer exec(), solo cargás la primera página. Las demás se traen cuando la CPU las pida.',
+                    '[[Bit de Validez|Flag en la tabla de páginas que indica si una página está cargada en RAM (V=1) o en disco (V=0).]]: Cada entrada de la MPT tiene un bit que dice si la página está en un frame (válida) o todavía vive en disco (inválida).',
+                    '[[Dirty Bit|Bit de modificación: indica si una página fue escrita. Si es 1, al reemplazarla hay que escribirla de vuelta a disco. Si es 0, se descarta sin costo.]]: Si no tocaste la página, la tirás sin culpa. Si la modificaste, tenés que guardarla primero en disco.',
+                    '[[Prepaging|Carga anticipada: traer páginas a RAM antes de que se necesiten, intentando predecir el uso futuro.]]: Lo opuesto a Demand Paging. Intenta adivinar qué páginas vas a necesitar pronto. Arriesgado pero puede reducir page faults iniciales.'
+                ],
+                highlight: 'El truco de Demand Paging es que la mayoría de los programas siguen el Principio de Localidad: usan un subconjunto pequeño de sus páginas la mayor parte del tiempo.'
+            }
+        },
+        {
+            id: 'page-fault-flujo',
+            title: 'Page Fault: El Flujo Completo',
+            content: {
+                description: 'Cuando la CPU pide una página que NO está en RAM, el hardware genera una excepción llamada Page Fault. Acá empieza la magia (y el costo).',
+                items: [
+                    'Paso 1: La CPU genera una dirección lógica. La MMU consulta la MPT y encuentra el Bit de Validez en 0 → ¡Page Fault!',
+                    'Paso 2: Se genera un [[Trap|Excepción interna: una interrupción generada por el hardware cuando detecta una condición anómala.]] hacia el kernel.',
+                    'Paso 3: El SO verifica que la referencia sea legal (no es un acceso fuera de rango). Si es ilegal → mata al proceso.',
+                    'Paso 4: El SO busca un frame libre en RAM. Si no hay ninguno → ejecuta el [[Algoritmo de Reemplazo|Política que decide qué página sacar de RAM para hacer lugar a la nueva.]].',
+                    'Paso 5: Si la página víctima tiene el [[Dirty Bit|Bit de modificación]] en 1, se escribe a disco (swap out). Si es 0, se descarta directamente.',
+                    'Paso 6: Se trae la página pedida desde disco al frame libre (swap in). Se actualiza la MPT con el nuevo frame y se pone Bit de Validez = 1.',
+                    'Paso 7: Se reinicia la instrucción que causó el fault. La CPU vuelve a ejecutarla y ahora sí encuentra la página en RAM.'
+                ],
+                highlight: 'Un Page Fault cuesta entre 1 y 10 millones de ciclos de CPU (porque hay acceso a disco). Por eso minimizar los fallos es crítico para el rendimiento.'
+            }
+        },
+        {
+            id: 'algoritmos-reemplazo',
+            title: 'Algoritmos de Reemplazo de Páginas',
+            content: {
+                description: 'Cuando la RAM está llena y llega una página nueva, ¿a quién echamos? Esa es la pregunta del millón. Cada algoritmo tiene su filosofía.',
+                items: [
+                    '[[FIFO|First In First Out: la página más vieja en RAM es la primera en salir. Simple pero puede reemplazar páginas que se usan mucho.]]: La más veterana vuela. Fácil de implementar pero sufre la Anomalía de Belady.',
+                    '[[LRU|Least Recently Used: reemplaza la página que hace más tiempo no se accede. Buen rendimiento pero costoso de implementar exactamente.]]: La que hace más rato no se usa, se va. Es el mejor algoritmo práctico pero necesita contadores o pilas.',
+                    '[[Óptimo (OPT)|Reemplaza la página que más tardará en ser utilizada en el futuro. Es imposible de implementar en la práctica porque requiere conocer el futuro.]]: El algoritmo perfecto... e imposible. Sirve como benchmark para comparar a los demás.',
+                    '[[Clock (Second Chance)|Variante eficiente de FIFO con un bit de referencia. Antes de sacar una página, le da una "segunda oportunidad" si fue usada recientemente.]]: Un puntero gira como las agujas del reloj. Si la página tiene el bit de referencia en 1, lo pone en 0 y le da otra chance. Si ya está en 0, la reemplaza.',
+                    '[[NRU|Not Recently Used: clasifica páginas en 4 categorías según bits de referencia y modificación (R, M). Reemplaza de la categoría más baja.]]: Clasifica en 4 grupos: (0,0) ni usada ni modificada → primera víctima; (0,1) no usada pero modificada; (1,0) usada pero limpia; (1,1) la peor para sacar.'
+                ],
+                highlight: 'Regla de oro: LRU es el santo grial práctico. Si es muy caro de implementar, Clock es la mejor aproximación.'
+            }
+        },
+        {
+            id: 'working-set-tablas',
+            title: 'Working Set y Tablas Multinivel',
+            content: {
+                description: 'Dos conceptos avanzados que definen la eficiencia real del sistema de memoria virtual.',
+                items: [
+                    '[[Working Set|Conjunto de trabajo: el conjunto de páginas que un proceso está usando activamente en un intervalo de tiempo dado (ventana Δ).]]: Si el SO le da al proceso suficientes frames para cubrir su Working Set, funciona bien. Si no, empieza el Thrashing.',
+                    'Relación con Thrashing: Si la suma de todos los Working Sets supera los frames disponibles (Σ WS > frames), el sistema colapsa. La solución es suspender procesos (swapping) hasta bajar la carga.',
+                    '[[Tablas de Páginas Multinivel|Esquema jerárquico donde la tabla de páginas se divide en niveles (ej: directorio + tabla). Permite que la tabla en sí ocupe menos RAM.]]: En vez de tener una tabla gigante de 4 millones de entradas, la dividimos en un "directorio" que apunta a sub-tablas más chicas. Solo las sub-tablas necesarias se cargan en RAM.',
+                    '[[Tabla de Páginas Invertida|Una sola tabla global indexada por frame (no por página). Ahorra mucha memoria pero cada búsqueda requiere recorrer la tabla o usar hash.]]: En vez de una tabla por proceso, una sola tabla global. Cada entrada dice "en este frame está la página X del proceso Y". Ahorra RAM pero complica la búsqueda.',
+                    'Tamaño de página: Páginas chicas → menos fragmentación interna pero tablas más grandes y más page faults. Páginas grandes → más fragmentación interna pero menos entradas en la tabla.'
+                ],
+                highlight: 'El Working Set es la clave para evitar el Thrashing: si no podés darle a un proceso los frames que necesita, mejor suspendelo.'
+            }
         }
     ],
 
@@ -124,6 +185,52 @@ export const module5: Module = {
             type: 'Desarrollo',
             question: 'Describa la función de la MMU y nombre al menos dos registros de hardware que utilice.',
             answer: 'La MMU es la unidad de hardware que traduce direcciones lógicas a físicas en tiempo real y protege la memoria. Utiliza registros como el Registro Base (o de Relocalización) y el Registro Límite (Boundary) para verificar que el proceso no acceda a direcciones fuera de su espacio asignado.',
+        },
+        {
+            type: 'V/F',
+            question: 'En la paginación bajo demanda, todas las páginas de un proceso se cargan en memoria RAM al momento de ejecutar el programa.',
+            answer: 'Falso',
+            explanation: 'Justamente lo contrario: en Demand Paging las páginas se cargan SOLO cuando son referenciadas por primera vez. Si una función del programa nunca se ejecuta, sus páginas jamás se cargan en RAM, ahorrando memoria y tiempo de carga inicial.'
+        },
+        {
+            type: 'V/F',
+            question: 'Si una página tiene el Dirty Bit en 0, al ser reemplazada no necesita ser escrita a disco.',
+            answer: 'Verdadero',
+            explanation: 'El Dirty Bit indica si la página fue modificada en RAM. Si está en 0 (limpia), su contenido es idéntico al que está en disco, así que se puede descartar directamente. Si está en 1, hay que escribirla a disco antes de reemplazarla para no perder los cambios.'
+        },
+        {
+            type: 'V/F',
+            question: 'El algoritmo de reemplazo Óptimo (OPT) es implementable en la práctica y se usa en los sistemas operativos modernos.',
+            answer: 'Falso',
+            explanation: 'El algoritmo Óptimo requiere conocer el futuro: reemplaza la página que más tardará en ser usada. Como no podemos predecir el futuro, es imposible de implementar. Se usa únicamente como referencia teórica para medir qué tan bien funcionan los algoritmos reales (FIFO, LRU, Clock).'
+        },
+        {
+            type: 'V/F',
+            question: 'El algoritmo LRU puede sufrir la Anomalía de Belady.',
+            answer: 'Falso',
+            explanation: 'LRU es un algoritmo de pila (stack algorithm), lo que garantiza que agregar más frames nunca puede aumentar la cantidad de page faults. La Anomalía de Belady solo afecta a algoritmos que no son de pila, como FIFO.'
+        },
+        {
+            type: 'Desarrollo',
+            question: 'Explique el flujo completo de un Page Fault, desde que la CPU genera la dirección hasta que la instrucción se reintenta.',
+            answer: '1. La CPU genera una dirección lógica y la MMU consulta la MPT. 2. El Bit de Validez está en 0 → se genera un Trap (Page Fault). 3. El SO verifica que el acceso sea legal. 4. Busca un frame libre; si no hay, ejecuta el algoritmo de reemplazo (FIFO/LRU/Clock). 5. Si la víctima tiene Dirty Bit = 1, la escribe a disco (swap out). 6. Trae la página solicitada desde disco al frame libre (swap in). 7. Actualiza la MPT (frame + Validez = 1). 8. Reinicia la instrucción que causó el fault.'
+        },
+        {
+            type: 'Desarrollo',
+            question: '¿Qué es el Working Set de un proceso y cómo se relaciona con el Thrashing?',
+            answer: 'El Working Set es el conjunto de páginas que un proceso está usando activamente dentro de una ventana de tiempo (Δ). Si el SO le asigna al proceso al menos tantos frames como el tamaño de su Working Set, funciona eficientemente. Si la suma de todos los Working Sets supera los frames disponibles, los procesos empiezan a generar Page Faults constantemente (Thrashing). La solución es suspender procesos hasta que la carga baje.'
+        },
+        {
+            type: 'V/F',
+            question: 'El algoritmo de reemplazo Clock (Second Chance) es una variante de LRU.',
+            answer: 'Falso',
+            explanation: 'Clock es una variante mejorada de FIFO, no de LRU. Usa un bit de referencia para dar una "segunda oportunidad" a las páginas usadas recientemente antes de reemplazarlas. Es una aproximación a LRU pero con menor costo de implementación.'
+        },
+        {
+            type: 'V/F',
+            question: 'Las tablas de páginas multinivel permiten que la tabla de páginas ocupe menos memoria RAM que una tabla de un solo nivel.',
+            answer: 'Verdadero',
+            explanation: 'En una tabla de un solo nivel, todas las entradas deben estar en RAM aunque muchas apunten a páginas no usadas. Con multinivel, solo se mantienen en RAM las sub-tablas que corresponden a regiones de memoria que el proceso realmente usa. Las demás no se crean.'
         }
     ],
     challenge: {
@@ -148,11 +255,34 @@ export const module5: Module = {
             id: 'belady-visualizer',
             title: 'Visualizador de la Anomalía de Belady',
             description: 'Insertá una secuencia de páginas y compará FIFO vs LRU. Mirá cómo al subir de 3 a 4 frames, el FIFO se rompe solo.',
+            instructions: [
+                'Seleccioná una secuencia introduciendo números separados por comas, o usá una de las predeterminadas.',
+                'Iniciá la simulación.',
+                'Observá cómo la estrategia FIFO falla repetidas veces al incrementar la cantidad de marcos (Frames).',
+                'Compara esta curva con el algoritmo LRU, que siempre mejora o se mantiene igual.'
+            ],
         },
         {
             id: 'mmu-translator',
             title: 'MMU: El Traductor en Tiempo Real',
             description: 'Mirá cómo una dirección lógica se parte en (p, d), se busca en la tabla y se convierte en una dirección física real.',
+            instructions: [
+                'Generá direcciones virtuales lógicas hipotéticas usando el botón "Aleatorio".',
+                'Seguí las flechas que iluminan el flujo: primero se consulta la TLB buscando la página.',
+                'Si hay un TLB Miss, observá cómo se accede a la Page Table en memoria principal.',
+                'Finalmente, analizá cómo se compone la dirección física resultante con el Frame y el Desplazamiento (Offset).'
+            ],
+        },
+        {
+            id: 'demand-paging',
+            title: 'Paginación Bajo Demanda',
+            description: 'Simulá page faults, reemplazos (FIFO/LRU/OPT), dirty bits y mirá cómo cada algoritmo decide a quién echar de RAM.',
+            instructions: [
+                'Elegí el algoritmo de reemplazo a utilizar (FIFO, LRU, u Óptimo) y el tamaño de la memoria.',
+                'Cargá una secuencia de páginas y marcá algunas como "dirty" (sucias) haciendo clic en los checks.',
+                'Avanzá en la simulación manual o automáticamente.',
+                'Analizá qué páginas van a RAM, cuáles causan Page Fault, y cuándo un reemplazo necesita acceso a disco (Swap).'
+            ],
         }
     ],
 };

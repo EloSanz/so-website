@@ -322,6 +322,12 @@ int main() {
             id: 'interrupt',
             title: 'El Viaje de la Interrupción',
             description: 'Mirá cómo el hardware le pega el grito al kernel y el handler trata de que no explote nada.',
+            instructions: [
+                'Hacé clic en "Generar Interrupción" para simular un evento de hardware.',
+                'Observá cómo la CPU detiene el proceso actual.',
+                'Seguí el flujo de ejecución hacia el manejador de interrupciones (ISR).',
+                'Mirá cómo se restaura el contexto del proceso una vez que termina.'
+            ],
         }
     ],
 };

@@ -79,6 +79,7 @@ export interface Module {
         id: string;
         title: string;
         description: string;
+        instructions?: string[];
     }[];
     examQuestions?: {
         type: 'V/F' | 'Desarrollo';

@@ -248,11 +248,23 @@ export const module6: Module = {
             id: 'dma-transfer',
             title: 'Simulación de DMA',
             description: 'Mirá cómo el controlador de DMA le roba ciclos a la CPU para mover datos sin que el micro se entere.',
+            instructions: [
+                'Elegí un tamaño de bloque a transferir desde el dispositivo de I/O a memoria.',
+                'Iniciá la simulación del DMA.',
+                'Observá cómo la CPU es "interrumpida" solo al inicio para configurar y al final (cuando termina el paquete).',
+                'Apreciá el ciclo de robo (Cycle Stealing) del Bus donde la CPU descansa brevemente.'
+            ],
         },
         {
             id: 'disk-scheduling',
             title: 'Algoritmos de Brazo de Disco',
             description: 'Visualizá movimientos como FCFS, SSTF y SCAN para entender cómo optimizar el Seek Time.',
+            instructions: [
+                'Elegí un algoritmo de planificación del brazo del disco (FCFS, SSTF, SCAN).',
+                'Añadí posiciones de acceso (cilindros) en una cola de peticiones.',
+                'Ejecutá la simulación y seguí el recorrido del cabezal de lectura/escritura.',
+                'Comprobá la distancia de búsqueda (Seek Time) total comparando los distintos algoritmos.'
+            ],
         }
     ],
 };
