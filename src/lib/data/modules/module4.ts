@@ -98,8 +98,8 @@ export const module4: Module = {
         },
     ],
     lab: {
-        language: 'Java / POSIX Threads',
-        task: 'Implementar el problema de los Filósofos Comensales usando semáforos para evitar el Deadlock (espera circular).',
+        language: 'C',
+        task: 'Simulador de Deadlock en C. Implementá un programa que genere un bloqueo mutuo entre dos hilos usando Mutexes, y luego intentá resolverlo rompiendo la Espera Circular o usando un orden de adquisición jerárquico.',
     },
     animations: [
         {
@@ -131,6 +131,54 @@ export const module4: Module = {
             question: 'La Sincronización y la Comunicación son exactamente el mismo concepto en Sistemas Operativos.',
             answer: 'F',
             explanation: 'Sincronizar es ordenar el acceso en el tiempo (control de tráfico), Comunicar es transferir datos (intercambio de info).'
+        },
+        {
+            type: 'V/F',
+            question: 'Implementar semáforos mutex con espera activa aumenta la posibilidad de ocurrencia de deadlocks.',
+            answer: 'Verdadero',
+            explanation: 'En un sistema monoprocesador, si un proceso hace un P() sobre un semáforo con espera activa, se queda en un bucle infinito consumiendo CPU. El proceso que necesita el procesador para liberar ese semáforo no puede ejecutarse porque el otro acapara la CPU, generando un bloqueo que no ocurriría con espera pasiva (bloqueo en cola).'
+        },
+        {
+            type: 'V/F',
+            question: 'El uso de recursos consumibles no genera deadlock.',
+            answer: 'Falso',
+            explanation: 'Un recurso consumible (ej: un mensaje) sí puede generar deadlock. Ejemplo: el proceso A envía con send() bloqueante y espera que B lo reciba, pero B también necesita que A reciba algo primero. Ambos quedan bloqueados indefinidamente esperando al otro.'
+        },
+        {
+            type: 'V/F',
+            question: 'Si en un sistema hay 4 procesos y 3 recursos compartidos entre sí (2 procesadores y un buffer de memoria) entonces se pueden cumplir las condiciones de Coffman y producir un deadlock.',
+            answer: 'Falso',
+            explanation: 'Los procesadores son administrados por el planificador del SO, no son recursos que los procesos "retengan" como un mutex. Descartando los 2 procesadores, queda solo 1 recurso (el buffer). Para que haya deadlock se necesitan al menos 2 procesos y 2 recursos para que exista espera circular.'
+        },
+        {
+            type: 'V/F',
+            question: '¿Pueden 3 procesos que comparten 5 archivos ejecutarse en forma concurrente?',
+            answer: 'Verdadero',
+            explanation: 'Sí, si se cumplen las condiciones de Bernstein: (1) El conjunto de lectura de cada proceso tiene intersección nula con el conjunto de escritura de los otros, (2) Los conjuntos de escritura de todos los procesos son mutuamente disjuntos. Si todos leen sin escribir, o escriben en archivos distintos, pueden ejecutarse concurrentemente sin problemas.'
+        },
+        {
+            type: 'V/F',
+            question: 'No es posible la ocurrencia de un deadlock si el sistema operativo es monoprogramado.',
+            answer: 'Verdadero',
+            explanation: 'En un sistema monoprogramado, los procesos se ejecutan secuencialmente: hasta que un proceso no finaliza, no se inicia otro. No puede haber espera circular entre procesos si solo hay uno en memoria a la vez.'
+        },
+        {
+            type: 'V/F',
+            question: 'Es imposible que ocurra una race condition entre dos hilos ULT de un mismo proceso.',
+            answer: 'Falso',
+            explanation: 'Los hilos ULT comparten el mismo espacio de memoria del proceso. Si dos hilos intentan escribir en la misma variable sin sincronización adecuada, se produce una race condition. Que sean ULT no los exime de los problemas de concurrencia.'
+        },
+        {
+            type: 'V/F',
+            question: 'Si un sistema es multiprocesador monoprogramado (por procesador), no existe posibilidad de que se produzca un deadlock.',
+            answer: 'Falso',
+            explanation: 'Aunque solo haya un proceso por procesador, puede haber dos procesos ejecutándose en procesadores distintos que necesiten el mismo recurso compartido. Si ambos retienen un recurso y esperan el del otro, se produce un deadlock clásico.'
+        },
+        {
+            type: 'V/F',
+            question: 'Si la implementación de las primitivas V() y P() utilizadas para sincronizar no fueran atómicas, entonces la probabilidad de deadlock aumentaría.',
+            answer: 'Verdadero',
+            explanation: 'Las primitivas P() y V() se usan para exclusión mutua y coordinación. Si no son atómicas, dos procesos podrían ejecutar partes de la operación de forma intercalada, corrompiendo el valor del semáforo. Esto podría llevar a que un recurso nunca se libere o que dos procesos accedan simultáneamente, generando condiciones de carrera y potenciales deadlocks.'
         }
     ]
 };

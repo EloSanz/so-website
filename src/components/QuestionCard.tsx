@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HelpCircle, BookOpen, CheckCircle2, XCircle, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { parseTextWithTerms } from '@/lib/utils/textParser';
+import { InteractiveCard, RevealBadge } from './ui/interactive-card';
 
 interface QuestionProps {
     q: {
@@ -24,15 +25,7 @@ export const QuestionCard: React.FC<QuestionProps> = ({ q }) => {
         : q.answer;
 
     return (
-        <div
-            className={cn(
-                "group/q bg-card border rounded-[2rem] p-6 transition-all duration-500 cursor-pointer select-none",
-                isOpen
-                    ? "border-primary/30 shadow-2xl shadow-primary/5 ring-1 ring-primary/10"
-                    : "border-border hover:border-primary/20 hover:bg-muted/30 shadow-sm"
-            )}
-            onClick={() => setIsOpen(!isOpen)}
-        >
+        <InteractiveCard isOpen={isOpen} onClick={() => setIsOpen(!isOpen)}>
             <div className="flex items-start gap-5">
                 <div className={cn(
                     "w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all duration-500",
@@ -49,12 +42,7 @@ export const QuestionCard: React.FC<QuestionProps> = ({ q }) => {
                         <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50">
                             {q.type}
                         </span>
-                        <div className={cn(
-                            "px-3 py-1 rounded-full text-[10px] font-bold transition-all duration-500",
-                            isOpen ? "bg-primary/10 text-primary opacity-100" : "bg-muted text-muted-foreground opacity-40"
-                        )}>
-                            {isOpen ? "OCULTAR" : "REVELAR"}
-                        </div>
+                        <RevealBadge isOpen={isOpen} />
                     </div>
 
                     <h3 className="text-lg font-semibold leading-tight text-foreground/90">
@@ -116,6 +104,6 @@ export const QuestionCard: React.FC<QuestionProps> = ({ q }) => {
                     </AnimatePresence>
                 </div>
             </div>
-        </div>
+        </InteractiveCard>
     );
 };

@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Eye, EyeOff, Terminal } from 'lucide-react';
+import { Play, Eye, EyeOff } from 'lucide-react';
+import { CodeWindow, CodeBlock } from './ui/code-window';
 
 interface CodeExampleProps {
     language: string;
@@ -21,25 +22,9 @@ export const CodeExample: React.FC<CodeExampleProps> = ({
 
     return (
         <div className="my-8 rounded-[2rem] overflow-hidden border border-border/50 bg-[#0d1117] shadow-xl">
-            <div className="flex items-center justify-between px-6 py-4 bg-muted/5 border-b border-border/50">
-                <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-primary/10">
-                        <Terminal className="w-4 h-4 text-primary" />
-                    </div>
-                    <span className="text-xs font-mono text-muted-foreground font-bold tracking-widest uppercase">{language}</span>
-                </div>
-                <div className="flex gap-2">
-                    <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/10" />
-                    <div className="w-3 h-3 rounded-full bg-amber-500/20 border border-amber-500/10" />
-                    <div className="w-3 h-3 rounded-full bg-emerald-500/20 border border-emerald-500/10" />
-                </div>
-            </div>
-
-            <div className="p-8 overflow-x-auto bg-[#0d1117]">
-                <pre className="text-sm font-mono text-slate-300 leading-relaxed">
-                    <code>{snippet}</code>
-                </pre>
-            </div>
+            <CodeWindow language={language} variant="code">
+                <CodeBlock>{snippet}</CodeBlock>
+            </CodeWindow>
 
             {(revealQuestion || revealAnswer) && (
                 <button

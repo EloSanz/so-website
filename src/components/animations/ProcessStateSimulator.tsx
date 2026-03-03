@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Play, Pause, RefreshCcw, Zap, Clock, HardDrive } from "lucide-react";
+import { SimulatorContainer } from './ui/simulator';
 
 type ProcessState = "NEW" | "READY" | "RUNNING" | "BLOCKED" | "EXIT";
 
@@ -51,8 +52,8 @@ export function ProcessStateSimulator() {
     };
 
     return (
-        <div className="w-full h-full flex flex-col gap-6 select-none">
-            <div className="flex-1 relative flex items-center justify-center min-h-[300px]">
+        <SimulatorContainer className="select-none">
+            <div className="flex-1 relative flex flex-col items-center justify-center min-h-[300px]">
                 {/* Connection Arrows (Simplified SVG background) */}
                 <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20" viewBox="-300 -200 600 400">
                     {/* Ready <-> Running */}
@@ -74,8 +75,10 @@ export function ProcessStateSimulator() {
                     <div
                         key={state}
                         className={cn(
-                            "absolute text-[10px] font-black tracking-tighter uppercase opacity-30 transform -translate-x-1/2 -translate-y-1/2",
-                            process.state === state && "opacity-100 text-primary scale-110"
+                            "absolute text-[10px] font-black tracking-tighter uppercase transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300",
+                            process.state === state
+                                ? "opacity-100 text-primary scale-110 drop-shadow-sm"
+                                : "opacity-30 text-foreground"
                         )}
                         style={{ left: `calc(50% + ${pos.x}px)`, top: `calc(50% + ${pos.y}px)` }}
                     >
@@ -164,6 +167,6 @@ export function ProcessStateSimulator() {
                     ))}
                 </div>
             </div>
-        </div>
+        </SimulatorContainer>
     );
 }

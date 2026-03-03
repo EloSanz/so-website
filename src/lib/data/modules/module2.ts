@@ -292,6 +292,76 @@ export const module2: Module = {
             question: 'Si un proceso padre y su hijo están compitiendo por el mismo procesador, ¿el SO realiza un "Thread Context Switch" para alternar entre ellos ya que comparten memoria inicial via COW?',
             answer: 'Falso',
             explanation: 'Debe realizar un **Process Context Switch** completo. Aunque compartan memoria física inicialmente, son procesos distintos con espacios de direccionamiento lógicos separados (y sus propias tablas de páginas). Alternar entre ellos requiere un cambio total del contexto del proceso en el kernel y la [[MMU|Memory Management Unit]].'
+        },
+        {
+            type: 'V/F',
+            question: 'Los procesos que se encuentran en la cola de listos no están ejecutándose, por tal motivo es incorrecto decir que son procesos.',
+            answer: 'Falso',
+            explanation: 'Un proceso es una porción de un programa cargado en memoria. No es necesario que esté en ejecución para ser considerado un proceso; puede estar bloqueado, suspendido o listo. Si está en la cola de listos, ya está cargado en memoria y es un proceso válido.'
+        },
+        {
+            type: 'V/F',
+            question: 'Si tengo un sistema de tipo I/O bound resulta conveniente programarlo con threads ULT.',
+            answer: 'Falso',
+            explanation: 'Al usar hilos ULT, si uno de los hilos se bloquea por una syscall de I/O, todos los demás hilos del proceso se bloquearán también (el kernel no los conoce). Se podría usar Jacketing, pero implica reescribir la biblioteca de llamadas al sistema. Si el SO admite hilos KLT, es mejor usarlos para evitar el bloqueo total.'
+        },
+        {
+            type: 'V/F',
+            question: 'Los procesos livianos (hilos) poseen su propio espacio de direcciones, por lo tanto, para compartir información entre ellos deben recurrir a mecanismos especiales provistos por el SO.',
+            answer: 'Falso',
+            explanation: 'Los hilos comparten el espacio de direcciones, archivos y recursos del proceso que los genera. No necesitan mecanismos especiales del SO para comunicarse; simplemente usan los recursos compartidos (ej: escriben en la misma área de memoria). Eso sí, necesitan sincronización para evitar race conditions.'
+        },
+        {
+            type: 'V/F',
+            question: 'Los compiladores permiten convertir un programa en proceso.',
+            answer: 'Falso',
+            explanation: 'El compilador traduce el código fuente a código objeto. Este luego debe ser link-editado (enlazar referencias con bibliotecas) para generar un programa ejecutable. La ejecución de dicho ejecutable (carga en memoria por el Loader) es lo que genera un proceso. La compilación no crea procesos, solo traduce código.'
+        },
+        {
+            type: 'V/F',
+            question: 'El overhead producido por cambio de contexto utilizando hilos ULT es menor al producido en los hilos KLT, ya que la información que debe intercambiarse en el procesador es menor.',
+            answer: 'Verdadero',
+            explanation: 'Los hilos ULT se administran a nivel de usuario y no requieren la intervención del SO para realizar el cambio de contexto (no hay cambio de modo usuario/kernel). En KLT, el cambio de contexto pasa por el kernel, lo que implica un cambio de modo y mayor overhead.'
+        },
+        {
+            type: 'V/F',
+            question: 'Para un proceso que ejecuta una única tarea secuencial con mucha entrada/salida, en un entorno de multiprocesamiento, la opción más performante sería hilos a nivel de kernel (KLT).',
+            answer: 'Falso',
+            explanation: 'Al ser una única tarea secuencial, usar hilos KLT no aprovecharía el paralelismo que ofrecen los múltiples procesadores. Para una sola tarea secuencial, conviene un único proceso pesado, ahorrándose el overhead que implican la creación y el cambio de contexto de los hilos KLT.'
+        },
+        {
+            type: 'V/F',
+            question: 'El uso de threads ULT en un sistema no tiene fundamento porque no puede ejecutar parte de un proceso en múltiples núcleos.',
+            answer: 'Falso',
+            explanation: 'Si bien los hilos ULT no aprovechan el multiprocesamiento (el kernel ve un solo hilo), siguen siendo útiles. Para procesos con mucha I/O, el cambio de contexto entre ULTs es mucho más rápido que entre KLTs, y no requieren intervención del kernel. Son una herramienta válida cuando el paralelismo real no es prioritario.'
+        },
+        {
+            type: 'V/F',
+            question: 'Si un proceso padre termina, los procesos hijos de este también terminarán.',
+            answer: 'Falso',
+            explanation: 'Cuando un proceso padre muere, sus hijos quedan "huérfanos". El SO toma la responsabilidad por ellos: el proceso de inicialización (init, PID 1, o systemd) se convierte en su nuevo padre adoptivo para asegurar que alguien los gestione cuando terminen.'
+        },
+        {
+            type: 'V/F',
+            question: 'El kernel de un sistema operativo moderno no tiene PCB ya que el sistema operativo no necesita contar con la información de ese proceso.',
+            answer: 'Falso',
+            explanation: 'El PCB (Process Control Block) es esencial y siempre existe en el kernel. Contiene el contexto del proceso (registros, PC, stack pointer), información de I/O, prioridad, etc. Sin el PCB, el cambio de contexto sería imposible porque no habría dónde guardar ni recuperar el estado del proceso.'
+        },
+        {
+            type: 'V/F',
+            question: 'Un proceso que se encuentra en estado "Terminated" en un diagrama de 7 estados, se conserva para que pase nuevamente a "Running".',
+            answer: 'Falso',
+            explanation: 'Un proceso en estado "Terminated" ya finalizó su ejecución. No ejecuta más instrucciones y el SO le retirará los recursos que consume. Se conserva brevemente solo para que el padre pueda leer su código de salida (wait()), no para volver a ejecutar.'
+        },
+        {
+            type: 'Desarrollo',
+            question: 'Explique las diferencias y similitudes entre los modelos de planificación de 5 y 7 estados.',
+            answer: 'Similitudes: Ambos tienen los estados Nuevo, Listo, Ejecutando, Bloqueado y Terminado. Diferencias: El modelo de 7 estados agrega dos estados "suspendidos": Bloqueado-Suspendido (el proceso esperaba un evento y fue enviado a disco por falta de RAM) y Listo-Suspendido (el proceso ya tiene su evento resuelto pero sigue en disco). La suspensión permite al SO liberar memoria RAM intercambiando procesos a disco (swapping).'
+        },
+        {
+            type: 'Desarrollo',
+            question: 'Explique el mecanismo de creación de un nuevo proceso.',
+            answer: '1. Asignar un PID al nuevo proceso y crear una entrada en la tabla de procesos. 2. Asignar espacio en Memoria Central para el proceso y para su PCB. 3. Inicializar el PCB con los valores por defecto (registros, PC, prioridad, etc.). 4. Establecer los enlaces con otras estructuras de datos del SO (colas de planificación, tablas de archivos). 5. Insertar el proceso en la cola de Listos para que el planificador de corto plazo lo considere.'
         }
     ]
 };

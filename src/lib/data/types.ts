@@ -5,6 +5,7 @@ export interface Topic {
         description: string;
         items?: string[];
         highlight?: string;
+        diagram?: string;
         code?: {
             language: string;
             snippet: string;
@@ -67,7 +68,7 @@ export interface Module {
     unit: string;
     advancedFocus: string;
     topics?: Topic[];
-    lab: {
+    lab?: {
         language: string;
         task: string;
     };

@@ -2,9 +2,10 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Terminal, Code, BookOpen, ChevronRight, CheckCircle2, FlaskConical, Info } from 'lucide-react';
+import { BookOpen, ChevronRight, CheckCircle2, FlaskConical, Info } from 'lucide-react';
 import { GuidedLab as GuidedLabType, LabStep } from '../lib/data/types';
 import { cn } from '@/lib/utils';
+import { CodeWindow, CodeBlock, TerminalCommand } from './ui/code-window';
 
 interface GuidedLabProps {
     lab: GuidedLabType;
@@ -107,38 +108,15 @@ export const GuidedLab: React.FC<GuidedLabProps> = ({ lab }) => {
 
                                 {/* Code/Terminal Area */}
                                 {currentStep.command && (
-                                    <div className="bg-[#0d1117] rounded-2xl overflow-hidden border border-border/50 mb-6">
-                                        <div className="flex items-center px-4 py-2 bg-muted/5 border-b border-border/10 justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <Terminal className="w-3.5 h-3.5 text-muted-foreground" />
-                                                <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Terminal</span>
-                                            </div>
-                                            <div className="flex gap-1.5 font-bold">
-                                                <div className="w-2 h-2 rounded-full bg-rose-500/20" />
-                                                <div className="w-2 h-2 rounded-full bg-amber-500/20" />
-                                                <div className="w-2 h-2 rounded-full bg-emerald-500/20" />
-                                            </div>
-                                        </div>
-                                        <div className="p-6">
-                                            <code className="text-emerald-400 font-mono text-sm leading-relaxed break-all">
-                                                $ {currentStep.command}
-                                            </code>
-                                        </div>
-                                    </div>
+                                    <CodeWindow variant="terminal" className="mb-6">
+                                        <TerminalCommand command={currentStep.command} />
+                                    </CodeWindow>
                                 )}
 
                                 {currentStep.code && (
-                                    <div className="bg-[#0d1117] rounded-2xl overflow-hidden border border-border/50 mb-6">
-                                        <div className="flex items-center px-4 py-2 bg-muted/5 border-b border-border/10">
-                                            <Code className="w-3.5 h-3.5 text-muted-foreground mr-2" />
-                                            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Código C</span>
-                                        </div>
-                                        <div className="p-6 overflow-x-auto">
-                                            <pre className="text-slate-300 font-mono text-sm leading-relaxed">
-                                                <code>{currentStep.code}</code>
-                                            </pre>
-                                        </div>
-                                    </div>
+                                    <CodeWindow language="Código C" variant="code" className="mb-6">
+                                        <CodeBlock>{currentStep.code}</CodeBlock>
+                                    </CodeWindow>
                                 )}
 
                                 {/* Technical Explanation */}

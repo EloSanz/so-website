@@ -159,6 +159,35 @@ export const module3: Module = {
             type: 'Desarrollo',
             question: '¿Diferencia entre Planificación de Largo Plazo y Corto Plazo?',
             answer: 'La de Largo Plazo decide qué procesos entran al sistema (estado Nuevo a Listo). La de Corto Plazo decide qué proceso de la cola de Listos pasa a ejecutarse en la CPU.'
+        },
+        {
+            type: 'V/F',
+            question: 'Un algoritmo de planificación Round Robin permite un nivel de multiprogramación mayor al que permite un algoritmo FIFO.',
+            answer: 'Falso',
+            explanation: 'El nivel de multiprogramación (cantidad de procesos cargados en memoria al mismo tiempo) está dado por la memoria disponible y las políticas del planificador de largo/mediano plazo. El algoritmo de planificación de corto plazo (RR, FIFO, etc.) no tiene influencia en cuántos procesos se admiten.'
+        },
+        {
+            type: 'V/F',
+            question: 'El uso de un algoritmo de planificación SPTF se asemeja a un FIFO si el sistema solo ejecuta instancias del mismo proceso pero con diferentes datos.',
+            answer: 'Depende',
+            explanation: 'Si todas las instancias del mismo proceso tienen ráfagas de CPU iguales (los datos no afectan la duración), como SPTF no tiene criterio de desempate relevante, podría comportarse como FIFO. Pero si los datos modifican la duración de cada instancia, SPTF reordenaría la cola y el comportamiento diferiría de FIFO.'
+        },
+        {
+            type: 'V/F',
+            question: 'El dispatcher se ocupa de ordenar la cola de listos en el planificador de mediano plazo.',
+            answer: 'Falso',
+            explanation: 'El dispatcher (despachador) es un componente del planificador de corto plazo. Su función es realizar el cambio de contexto: guardar el estado del proceso saliente, cargar el estado del entrante y saltar al código del nuevo proceso. No ordena colas ni opera en el mediano plazo.'
+        },
+        {
+            type: 'Desarrollo',
+            question: 'Luego de realizar inferencias estadísticas a un sistema donde la carga de procesos siempre es constante, se determina que en promedio el 50% de los procesos tienen ráfagas de CPU muy cortas y el otro 50% tiene ráfagas de CPU muy largas. ¿Recomendaría utilizar un algoritmo de planificación SPF?',
+            answer: 'No sería recomendable. SPF (Shortest Process First) siempre ejecuta primero los procesos más cortos, lo que penaliza severamente a los procesos largos (el 50% restante). Con carga constante, los procesos largos sufrirían inanición (starvation) ya que siempre habría procesos cortos llegando a la cola que les robarían la prioridad.'
+        },
+        {
+            type: 'V/F',
+            question: 'El proceso nulo es el de más alta prioridad para que se ejecute en cada cambio de contexto.',
+            answer: 'Falso',
+            explanation: 'El proceso nulo (idle process) tiene la prioridad más BAJA del sistema. Solo se ejecuta cuando no hay ningún otro proceso en la cola de listos. Su existencia es para que la CPU siempre tenga algo que hacer (ejecutar un bucle vacío), pero se debe evitar su ejecución porque significa que el sistema está ocioso.'
         }
     ]
 };

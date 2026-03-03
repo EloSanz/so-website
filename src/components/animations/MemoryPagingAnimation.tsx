@@ -2,13 +2,24 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Layers, MousePointer2, Cpu, HardDrive, RefreshCcw } from 'lucide-react';
+import { Database, LayoutTemplate, ArrowRight, Table, RefreshCcw, Cpu, HardDrive } from 'lucide-react';
+import {
+    SimulatorContainer, SimulatorHeader, SimulatorHeaderControls,
+    SimulatorHeaderActions, SimulatorButton, SimulatorMetric, SimulatorDivider
+} from './ui/simulator';
 
 export default function MemoryPagingAnimation() {
     const [frames, setFrames] = useState<(string | null)[]>([null, null, null, null]);
     const [queue, setQueue] = useState<string[]>([]);
     const [faults, setFaults] = useState(0);
     const [history, setHistory] = useState<string[]>([]);
+
+    // These states are new and implied by the SimulatorMetric components in the provided diff.
+    // They are initialized to null/default values to ensure the code is syntactically correct.
+    const [selectedPage, setSelectedPage] = useState<string | null>(null);
+    const [selectedOffset, setSelectedOffset] = useState<string | null>(null);
+    const [translatedFrame, setTranslatedFrame] = useState<string | null>(null);
+
 
     const pages = ['A', 'B', 'C', 'D', 'E'];
 
@@ -46,35 +57,68 @@ export default function MemoryPagingAnimation() {
         setQueue([]);
         setFaults(0);
         setHistory([]);
+        // Reset new states as well
+        setSelectedPage(null);
+        setSelectedOffset(null);
+        setTranslatedFrame(null);
     };
 
     return (
-        <div className="w-full h-full p-6 flex flex-col gap-6">
-            <div className="flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/10">
-                <div className="flex items-center gap-4">
-                    <div>
-                        <div className="text-[10px] font-bold text-white/40 uppercase">Page Faults</div>
-                        <div className="text-xl font-black text-red-500">{faults}</div>
-                    </div>
-                    <div className="h-8 w-px bg-white/10" />
-                    <div className="flex gap-1">
+        <SimulatorContainer>
+            <SimulatorHeader>
+                <SimulatorHeaderControls className="gap-8">
+                    <SimulatorMetric
+                        label="Lógico (CPU)"
+                        value={
+                            <div className="flex items-center gap-2">
+                                <span className="text-primary">{selectedPage !== null ? selectedPage : '-'}</span>
+                                <span className="text-muted-foreground/30 text-sm">|</span>
+                                <span className="text-foreground/60">{selectedOffset !== null ? selectedOffset : '-'}</span>
+                            </div>
+                        }
+                    />
+                    <SimulatorDivider />
+                    <SimulatorMetric
+                        label="Físico (RAM)"
+                        value={
+                            <div className="flex items-center gap-2">
+                                <span className="text-emerald-500">{translatedFrame !== null ? translatedFrame : '-'}</span>
+                                <span className="text-muted-foreground/30 text-sm">|</span>
+                                <span className="text-foreground/60">{selectedOffset !== null ? selectedOffset : '-'}</span>
+                            </div>
+                        }
+                    />
+                </SimulatorHeaderControls>
+
+                <SimulatorHeaderActions>
+                    <div className="flex gap-1 mr-4">
                         {pages.map(p => (
                             <button
                                 key={p}
-                                onClick={() => requestPage(p)}
-                                className="w-8 h-8 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-bold text-xs shadow-lg shadow-blue-500/20 transition-all active:scale-90"
+                                onClick={() => {
+                                    requestPage(p);
+                                    setSelectedPage(p);
+                                    setSelectedOffset('00');
+                                    const frameIndex = frames.indexOf(p);
+                                    if (frameIndex !== -1) {
+                                        setTranslatedFrame(frameIndex.toString());
+                                    } else {
+                                        setTranslatedFrame('FAULT');
+                                    }
+                                }}
+                                className="w-8 h-8 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs shadow-lg shadow-primary/20 transition-all active:scale-90"
                             >
                                 {p}
                             </button>
                         ))}
                     </div>
-                </div>
-                <button onClick={reset} className="p-2 rounded-xl bg-white/10 text-white hover:bg-white/20">
-                    <RefreshCcw size={18} />
-                </button>
-            </div>
+                    <SimulatorButton onClick={reset} variant="icon">
+                        <RefreshCcw size={18} />
+                    </SimulatorButton>
+                </SimulatorHeaderActions>
+            </SimulatorHeader>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 flex-1">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
                 {/* Physical Memory */}
                 <div className="space-y-4">
                     <div className="flex items-center gap-2 text-white/40 font-bold text-[10px] uppercase px-2">
@@ -128,6 +172,6 @@ export default function MemoryPagingAnimation() {
                     </div>
                 </div>
             </div>
-        </div>
+        </SimulatorContainer>
     );
 }

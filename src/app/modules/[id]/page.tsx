@@ -13,6 +13,11 @@ import { GuidedLab } from "@/components/GuidedLab";
 import { StudentDebate } from "@/components/StudentDebate";
 import { PracticalChallenge } from "@/components/PracticalChallenge";
 import { LabTrigger } from "@/components/LabTrigger";
+import { LinksDiagram } from "@/components/diagrams/LinksDiagram";
+
+const diagramComponents: Record<string, React.ComponentType> = {
+    links: LinksDiagram,
+};
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -143,6 +148,11 @@ export default async function ModulePage({ params }: Props) {
                                                     </p>
                                                 </div>
                                             )}
+
+                                            {topic.content.diagram && diagramComponents[topic.content.diagram] && (() => {
+                                                const DiagramComponent = diagramComponents[topic.content.diagram!];
+                                                return <DiagramComponent />;
+                                            })()}
                                         </div>
                                     ) : (
                                         <div className="p-8 rounded-3xl border border-dashed border-border flex flex-col items-center justify-center gap-4 text-muted-foreground">
@@ -177,6 +187,33 @@ export default async function ModulePage({ params }: Props) {
                             </div>
                         </section>
 
+                        {/* Autoevaluación - Exam Questions */}
+                        {module.examQuestions && module.examQuestions.length > 0 && (
+                            <section id="practice" className="relative md:pl-16 scroll-mt-24 group">
+                                <div className="absolute left-0 top-0 w-8 h-8 rounded-full border border-orange-500/50 bg-orange-500/5 flex items-center justify-center text-xs font-bold text-orange-500 hidden md:flex z-10 transition-transform group-hover:scale-110">
+                                    <Zap className="w-4 h-4" />
+                                </div>
+
+                                <div className="space-y-6">
+                                    <div className="flex flex-col gap-2">
+                                        <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
+                                            <span className="md:hidden w-6 h-6 rounded-full bg-orange-500/10 flex items-center justify-center text-[10px] text-orange-500">
+                                                <Zap className="w-3 h-3" />
+                                            </span>
+                                            Autoevaluación
+                                        </h2>
+                                        <p className="text-muted-foreground text-sm">Preguntas de examen para que te pongas a prueba. Hacé click para revelar la respuesta.</p>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        {module.examQuestions.map((q, i) => (
+                                            <QuestionCard key={i} q={q} />
+                                        ))}
+                                    </div>
+                                </div>
+                            </section>
+                        )}
+
                         {module.conversation && (
                             <StudentDebate conversation={module.conversation} />
                         )}
@@ -193,12 +230,20 @@ export default async function ModulePage({ params }: Props) {
                                     <span className="md:hidden w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px]">
                                         <FlaskConical className="w-3 h-3" />
                                     </span>
-                                    {module.guidedLabs && module.guidedLabs.length > 0 ? "Laboratorio Guiado" : `Desafío Práctico: ${module.lab.language}`}
+                                    {module.guidedLabs && module.guidedLabs.length > 0
+                                        ? "Laboratorio Guiado"
+                                        : module.challenge
+                                            ? `Desafío Práctico: ${module.challenge.title}`
+                                            : `Desafío Práctico: ${module.lab?.language || 'C'}`}
                                 </h2>
 
                                 <LabTrigger
-                                    language={module.lab.language}
-                                    task={module.guidedLabs && module.guidedLabs.length > 0 ? module.guidedLabs[0].title : module.lab.task}
+                                    language={module.lab?.language || (module.challenge?.solutionCode?.language || 'C')}
+                                    task={module.guidedLabs && module.guidedLabs.length > 0
+                                        ? module.guidedLabs[0].title
+                                        : module.challenge
+                                            ? module.challenge.title
+                                            : module.lab?.task || ''}
                                     challenge={module.challenge}
                                     guidedLab={module.guidedLabs && module.guidedLabs.length > 0 ? module.guidedLabs[0] : undefined}
                                 />

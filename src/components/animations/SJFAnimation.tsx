@@ -3,6 +3,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, RotateCcw, Cpu, ListOrdered, BarChart3, Info } from 'lucide-react';
+import {
+    SimulatorContainer, SimulatorHeader, SimulatorHeaderControls,
+    SimulatorHeaderActions, SimulatorButton, SimulatorMetric, SimulatorDivider
+} from './ui/simulator';
 
 interface Process {
     id: string;
@@ -117,48 +121,44 @@ export default function SJFAnimation() {
     };
 
     return (
-        <div className="w-full h-full p-4 flex flex-col gap-6">
-            <div className="flex flex-wrap items-center justify-between gap-4 bg-white/5 p-4 rounded-2xl border border-white/10">
-                <div className="flex items-center gap-6">
+        <SimulatorContainer>
+            <SimulatorHeader>
+                <SimulatorHeaderControls>
                     <div className="flex items-center gap-2">
-                        <BarChart3 size={18} className="text-blue-400" />
-                        <span className="text-sm font-black text-white uppercase tracking-tighter">Shortest Job First</span>
+                        <BarChart3 size={18} className="text-primary" />
+                        <span className="text-sm font-black text-foreground uppercase tracking-tighter">Shortest Job First</span>
                     </div>
-                    <div className="h-8 w-px bg-white/10" />
-                    <div className="text-center">
-                        <div className="text-[10px] font-bold text-white/40 uppercase tracking-tighter">Reloj Central</div>
-                        <div className="text-lg font-black text-white">{totalTime}s</div>
-                    </div>
-                </div>
+                    <SimulatorDivider />
+                    <SimulatorMetric label="Reloj Central" value={`${totalTime}s`} />
+                </SimulatorHeaderControls>
 
-                <div className="flex gap-2">
-                    <button
+                <SimulatorHeaderActions>
+                    <SimulatorButton
                         onClick={addProcess}
                         disabled={isPlaying || processes.length >= 6}
-                        className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-[10px] uppercase font-black text-white hover:bg-white/10 disabled:opacity-30 transition-all tracking-widest"
                     >
                         + Nuevo Proc
-                    </button>
-                    <button
+                    </SimulatorButton>
+                    <SimulatorButton
                         onClick={() => setIsPlaying(!isPlaying)}
-                        className={`p-2 rounded-xl transition-all shadow-lg ${isPlaying ? 'bg-orange-500 shadow-orange-500/20' : 'bg-emerald-500 shadow-emerald-500/20'}`}
+                        variant={isPlaying ? "destructive" : "play"}
                     >
-                        {isPlaying ? <Pause size={18} className="text-white" /> : <Play size={18} className="text-white" />}
-                    </button>
-                    <button onClick={reset} className="p-2 rounded-xl bg-white/10 text-white hover:bg-white/20">
+                        {isPlaying ? <Pause size={18} /> : <Play size={18} />}
+                    </SimulatorButton>
+                    <SimulatorButton onClick={reset} variant="icon">
                         <RotateCcw size={18} />
-                    </button>
-                </div>
-            </div>
+                    </SimulatorButton>
+                </SimulatorHeaderActions>
+            </SimulatorHeader>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 flex-1">
-                <div className="md:col-span-3 bg-white/5 rounded-3xl border border-white/5 p-6 relative overflow-hidden flex flex-col">
-                    <div className="text-[10px] font-bold text-white/30 uppercase mb-4 flex items-center justify-between">
+                <div className="md:col-span-3 bg-muted/20 rounded-3xl border border-border p-6 relative overflow-hidden flex flex-col">
+                    <div className="text-[10px] font-bold text-muted-foreground uppercase mb-4 flex items-center justify-between">
                         <div className="flex items-center gap-2"><ListOrdered size={12} /> Cola de Listos (Ordenada por Duración)</div>
-                        <div className="flex items-center gap-1 text-blue-400/50"><Info size={10} /> SJF No-Apropiativo</div>
+                        <div className="flex items-center gap-1 text-primary/50"><Info size={10} /> SJF No-Apropiativo</div>
                     </div>
 
-                    <div className="flex flex-wrap gap-4 items-end min-h-[140px] border-b border-white/5 pb-4">
+                    <div className="flex flex-wrap gap-4 items-end min-h-[140px] border-b border-border pb-4">
                         <AnimatePresence>
                             {readyQueue.map((id) => {
                                 const p = processes.find(proc => proc.id === id)!;
@@ -189,14 +189,14 @@ export default function SJFAnimation() {
                             })}
                         </AnimatePresence>
                         {readyQueue.length === 0 && (
-                            <div className="w-full h-full flex items-center justify-center text-white/10 text-[10px] uppercase font-black tracking-widest">Cola Vacía</div>
+                            <div className="w-full h-full flex items-center justify-center text-muted-foreground/20 text-[10px] uppercase font-black tracking-widest">Cola Vacía</div>
                         )}
                     </div>
-                    <div className="mt-2 text-[9px] text-white/20 italic italic flex justify-center">Los procesos más cortos se adelantan en la fila</div>
+                    <div className="mt-2 text-[9px] text-muted-foreground/30 italic italic flex justify-center">Los procesos más cortos se adelantan en la fila</div>
                 </div>
 
-                <div className="bg-emerald-500/5 rounded-3xl border-2 border-dashed border-emerald-500/20 p-4 flex flex-col items-center justify-center gap-3 relative overflow-hidden">
-                    <div className="absolute top-4 left-4 text-[10px] font-bold text-emerald-500/50 uppercase flex items-center gap-1">
+                <div className="bg-primary/5 rounded-3xl border-2 border-dashed border-primary/20 p-4 flex flex-col items-center justify-center gap-3 relative overflow-hidden">
+                    <div className="absolute top-4 left-4 text-[10px] font-bold text-primary/50 uppercase flex items-center gap-1">
                         <Cpu size={12} /> CPU
                     </div>
                     <AnimatePresence mode="wait">
@@ -218,7 +218,7 @@ export default function SJFAnimation() {
                                 />
                             </motion.div>
                         ) : (
-                            <div className="text-white/10 uppercase tracking-widest font-black text-[10px]">CPU Ociosa</div>
+                            <div className="text-muted-foreground/20 uppercase tracking-widest font-black text-[10px]">CPU Ociosa</div>
                         )}
                     </AnimatePresence>
                 </div>
@@ -226,12 +226,12 @@ export default function SJFAnimation() {
 
             <div className="grid grid-cols-2 md:grid-cols-6 gap-2">
                 {processes.map(p => (
-                    <div key={p.id} className={`p-3 rounded-2xl border transition-all ${p.status === 'finished' ? 'bg-emerald-500/10 border-emerald-500/20 opacity-40' : 'bg-white/5 border-white/10'}`}>
+                    <div key={p.id} className={`p-3 rounded-2xl border transition-all ${p.status === 'finished' ? 'bg-green-500/10 border-green-500/20 opacity-40' : 'bg-muted/20 border-border'}`}>
                         <div className="flex justify-between items-center mb-2">
-                            <span className="text-[10px] font-black text-white/60">{p.name}</span>
-                            <span className="text-[8px] font-mono text-white/40">{p.burstTime}s</span>
+                            <span className="text-[10px] font-black text-foreground/60">{p.name}</span>
+                            <span className="text-[8px] font-mono text-muted-foreground/40">{p.burstTime}s</span>
                         </div>
-                        <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
+                        <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
                             <motion.div
                                 className="h-full"
                                 style={{ backgroundColor: p.color }}
@@ -241,6 +241,6 @@ export default function SJFAnimation() {
                     </div>
                 ))}
             </div>
-        </div>
+        </SimulatorContainer>
     );
 }

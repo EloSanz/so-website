@@ -147,6 +147,84 @@ export const module1: Module = {
             type: 'Desarrollo',
             question: '¿Cuáles son las dos condiciones principales para que ocurra el anidamiento (nesting) de interrupciones?',
             answer: '1. Que la nueva interrupción tenga un nivel de prioridad MAYOR a la que se está ejecutando. 2. Que el sistema (hardware y SO) soporte y tenga habilitadas las interrupciones anidadas, permitiendo que la CPU sea interrumpida mientras ya está dentro de una RAI.'
+        },
+        {
+            type: 'V/F',
+            question: 'Si un proceso está realizando cálculos (CPU Bound), este puede ser interrumpido temporalmente por una interrupción de software proveniente de otro proceso de mayor prioridad.',
+            answer: 'Falso',
+            explanation: 'Las interrupciones de software (syscalls/traps) son generadas por el programa que está en ejecución. Si el proceso actual es el que realiza cálculos, ningún otro proceso puede generar una interrupción de software; otro proceso podría ser seleccionado por el planificador tras una interrupción de hardware (ej: timer/quantum).'
+        },
+        {
+            type: 'V/F',
+            question: 'Postergar la atención de una interrupción por software puede afectar la normal ejecución de otros procesos en el sistema.',
+            answer: 'Falso',
+            explanation: 'Una interrupción por software (syscall) es un servicio que el SO le brinda al proceso que la invocó. Si se posterga, solo se afecta al proceso que lanzó ese pedido, no a los demás.'
+        },
+        {
+            type: 'V/F',
+            question: 'El tratamiento de una interrupción de hardware interna es enmascarable, si la excepción se produjo por "código de instrucción inválido".',
+            answer: 'Falso',
+            explanation: 'Las interrupciones de hardware internas (excepciones) se producen dentro del procesador y no pueden ser enmascaradas. Una instrucción inválida debe ser atendida de inmediato; caso contrario, el procesador no puede continuar con la ejecución.'
+        },
+        {
+            type: 'V/F',
+            question: 'Las interrupciones de hardware externas siempre generan un process switch, un context switch y un cambio de ejecución.',
+            answer: 'Falso',
+            explanation: 'Puede haber context switch sin process switch. Por ejemplo, si se está ejecutando un proceso "A" y llega una IHE, se carga la RAI. Pero si después de atender la interrupción continúa ejecutando el mismo proceso "A", no se produce un process switch completo.'
+        },
+        {
+            type: 'V/F',
+            question: 'En un entorno con 2 procesadores y administrado con un SO sin sustitución de procesos, se pueden producir más de dos interrupciones de hardware externo en forma simultánea.',
+            answer: 'Verdadero',
+            explanation: 'Las IHE las generan los dispositivos de E/S, no los procesadores. Si hay un disco y una impresora conectados a un canal multiplexor, cada procesador podría estar ejecutando un proceso distinto y ambos dispositivos podrían terminar sus operaciones al mismo tiempo, generando IHEs simultáneas independientemente de la cantidad de procesadores.'
+        },
+        {
+            type: 'V/F',
+            question: 'Las interrupciones son posibles gracias a la existencia del modo dual de operaciones.',
+            answer: 'Falso',
+            explanation: 'El modo dual (usuario/kernel) facilita la atención segura de las interrupciones al permitir ejecutar código privilegiado, pero no es lo que las genera. Las interrupciones existen gracias al hardware (líneas de IRQ, controlador de interrupciones PIC/APIC) que señaliza eventos a la CPU.'
+        },
+        {
+            type: 'V/F',
+            question: 'La ejecución de instrucciones en modo Kernel no puede ser interrumpida por la llegada de IRQs.',
+            answer: 'Falso',
+            explanation: 'Las interrupciones no enmascarables (NMI) pueden interrumpir incluso la ejecución en modo kernel. Ejemplo: el SO está atendiendo una syscall y en ese instante ocurre una IHE de un dispositivo de E/S; se atiende dicha interrupción y luego se retoma la syscall.'
+        },
+        {
+            type: 'V/F',
+            question: 'En un sistema monoprocesador multiprogramado, el SO puede atender dos o más interrupciones en forma simultánea.',
+            answer: 'Falso',
+            explanation: 'En un sistema monoprocesador solo hay un procesador, por lo tanto solo puede ejecutar una instrucción a la vez. Si ocurren dos interrupciones simultáneamente, el SO debe elegir cuál atender primero según la prioridad.'
+        },
+        {
+            type: 'V/F',
+            question: 'La interrupción generada por la terminación de un evento de I/O de un dispositivo, generalmente es no enmascarable.',
+            answer: 'Verdadero',
+            explanation: 'Las interrupciones de E/S son interrupciones de hardware externo que tienen alta prioridad. La terminación de una operación de I/O debe ser atendida para liberar el dispositivo y notificar al proceso que esperaba el resultado.'
+        },
+        {
+            type: 'V/F',
+            question: 'En un sistema monoprocesador, podría al mismo tiempo ocurrir que el proceso en ejecución pida la impresión de pantalla y el SO realice la evaluación del próximo proceso a ejecutar.',
+            answer: 'Falso',
+            explanation: 'En un sistema monoprocesador solo se puede ejecutar una instrucción a la vez. Si el proceso pide una E/S (syscall), el SO debe atender dicha solicitud, y al mismo tiempo no podría estar evaluando cuál es el próximo proceso a ejecutar.'
+        },
+        {
+            type: 'V/F',
+            question: 'Las instrucciones en modo privilegiado siempre son atómicas.',
+            answer: 'Falso',
+            explanation: 'El modo privilegiado (kernel) permite ejecutar instrucciones especiales que no están disponibles en modo usuario, pero eso no las hace atómicas. Una interrupción de hardware puede interrumpir la ejecución incluso en modo kernel. La atomicidad depende de la instrucción específica y del hardware, no del modo de ejecución.'
+        },
+        {
+            type: 'V/F',
+            question: 'En un sistema monoprocesador es posible que se generen en un mismo instante dos interrupciones por software.',
+            answer: 'Falso',
+            explanation: 'Las interrupciones de software (syscalls/traps) son generadas por el programa en ejecución. En un monoprocesador solo se ejecuta un proceso a la vez, por lo tanto solo puede generarse una interrupción de software a la vez. Si hubiera más de una syscall pendiente, se atenderían secuencialmente.'
+        },
+        {
+            type: 'V/F',
+            question: 'El procesador se entera de que hay una interrupción de hardware externa ya que se le activa el FLIH.',
+            answer: 'Verdadero',
+            explanation: 'El [[FLIH|First Level Interrupt Handler]] es un mecanismo del procesador (un bit/flag) que se enciende cuando llega una interrupción de hardware externa. Desde el punto de vista del procesador, una interrupción no es más que un bit que se activa en un sector específico del procesador (el FLIH), señalizando que hay un evento pendiente de atención.'
         }
     ],
     lab: {

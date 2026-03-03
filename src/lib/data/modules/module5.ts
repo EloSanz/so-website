@@ -126,9 +126,22 @@ export const module5: Module = {
             answer: 'La MMU es la unidad de hardware que traduce direcciones lógicas a físicas en tiempo real y protege la memoria. Utiliza registros como el Registro Base (o de Relocalización) y el Registro Límite (Boundary) para verificar que el proceso no acceda a direcciones fuera de su espacio asignado.',
         }
     ],
-    lab: {
-        language: 'C++',
-        task: 'Implementá un simulador de MPT con TLB. Debés recibir una dirección lógica, buscarla en el TLB (Hit/Miss) y, si es Miss, ir a la MPT. Si no está en MPT, ¡BOOM!: Page Fault.',
+    challenge: {
+        id: 'm5-challenge',
+        title: 'Simulador de MMU: MPT + TLB',
+        description: 'Implementá un simulador de MMU en C puro. El sistema debe traducir direcciones lógicas a físicas manejando un caché TLB y detectando Page Faults.',
+        task: 'Crear un programa en C que reciba direcciones de 16 bits, extraiga el Número de Página y el Offset, consulte un TLB de 4 entradas y, ante un Miss, acceda a la Tabla de Páginas.',
+        hints: [
+            'Define una estructura TLBEntry con `typedef struct`. Necesitás campos para `page_num`, `frame_num` y un flag de `valid`.',
+            'Usa operaciones binarias (máscaras y desplazamientos) para separar el número de página del offset.',
+            'Simulá la MPT como un arreglo de enteros donde el índice es la página y el valor es el frame.',
+            'No olvides inicializar el TLB como inválido al principio.',
+            'Extra: Implementá una política de reemplazo simple (como FIFO) para el TLB cuando se llene.'
+        ],
+        solutionCode: {
+            language: 'C',
+            code: '```c\n#include <stdio.h>\n#include <stdbool.h>\n\n#define TLB_SIZE 4\n#define PAGE_TABLE_SIZE 16\n\ntypedef struct {\n    int page_num;\n    int frame_num;\n    bool valid;\n} TLBEntry;\n\nTLBEntry tlb[TLB_SIZE];\nint mpt[PAGE_TABLE_SIZE];\n\nint translate(int logical_addr) {\n    int page = (logical_addr & 0xFF00) >> 8;\n    int offset = logical_addr & 0x00FF;\n\n    // 1. Buscar en TLB\n    for(int i=0; i < TLB_SIZE; i++) {\n        if(tlb[i].valid && tlb[i].page_num == page) {\n            printf("TLB Hit! Page %d\\n", page);\n            return (tlb[i].frame_num << 8) | offset;\n        }\n    }\n\n    // 2. TLB Miss -> Buscar en MPT\n    printf("TLB Miss. Accediendo a MPT...\\n");\n    int frame = mpt[page];\n    if(frame == -1) {\n        printf("PAGE FAULT! La página no está en RAM.\\n");\n        return -1;\n    }\n\n    // 3. Opcional: Actualizar TLB aquí\n    return (frame << 8) | offset;\n}\n```'
+        }
     },
     animations: [
         {

@@ -2,10 +2,11 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { MessageCircle, User, CheckCircle2, Trophy, Quote } from 'lucide-react';
+import { MessageCircle, CheckCircle2, Trophy, Quote } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ModuleConversation } from '@/lib/data/types';
 import { parseTextWithTerms } from '@/lib/utils/textParser';
+import { ChatBubble, VerdictCard } from './ui/interactive-card';
 
 interface StudentDebateProps {
     conversation: ModuleConversation;
@@ -36,65 +37,19 @@ export const StudentDebate = ({ conversation }: StudentDebateProps) => {
                 <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent rounded-[3rem] -z-10 blur-3xl opacity-50" />
 
                 <div className="space-y-6 px-2 md:px-0">
-                    {conversation.messages.map((msg, i) => {
-                        const isExpert = msg.role === 'expert';
-                        return (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                                viewport={{ once: true, margin: "-100px" }}
-                                transition={{
-                                    duration: 0.5,
-                                    delay: i * 0.15,
-                                    type: "spring",
-                                    stiffness: 100
-                                }}
-                                className={cn(
-                                    "flex items-end gap-3",
-                                    isExpert ? "flex-row-reverse" : "flex-row"
-                                )}
-                            >
-                                {/* Avatar */}
-                                <div className={cn(
-                                    "w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 border-2 shadow-lg",
-                                    isExpert
-                                        ? "bg-primary border-primary/20 text-primary-foreground rotate-3"
-                                        : "bg-card border-border text-muted-foreground -rotate-3"
-                                )}>
-                                    <User className="w-6 h-6" />
-                                </div>
-
-                                {/* Message Bubble */}
-                                <div className={cn(
-                                    "flex flex-col gap-1.5 max-w-[85%] md:max-w-[70%]",
-                                    isExpert ? "items-end" : "items-start"
-                                )}>
-                                    <span className="text-[10px] font-black uppercase text-muted-foreground/60 tracking-tighter px-2">
-                                        {msg.name} {isExpert && "✨"}
-                                    </span>
-                                    <div className={cn(
-                                        "p-4 md:p-5 rounded-3xl text-sm md:text-base leading-relaxed shadow-xl border backdrop-blur-sm transition-all hover:scale-[1.01]",
-                                        isExpert
-                                            ? "bg-primary text-primary-foreground border-primary/20 rounded-br-none shadow-primary/20"
-                                            : "bg-card/80 border-border rounded-bl-none text-foreground shadow-black/5"
-                                    )}>
-                                        {parseTextWithTerms(msg.message)}
-                                    </div>
-                                </div>
-                            </motion.div>
-                        );
-                    })}
+                    {conversation.messages.map((msg, i) => (
+                        <ChatBubble
+                            key={i}
+                            name={msg.name}
+                            message={parseTextWithTerms(msg.message)}
+                            isExpert={msg.role === 'expert'}
+                            index={i}
+                        />
+                    ))}
                 </div>
 
                 {/* Conclusion / Verdict Card */}
-                <motion.div
-                    initial={{ opacity: 0, y: 40 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: conversation.messages.length * 0.15 + 0.5, type: "spring" }}
-                    className="mt-16 p-8 rounded-[2.5rem] bg-emerald-500/5 border border-emerald-500/20 relative overflow-hidden group shadow-2xl"
-                >
+                <VerdictCard delay={conversation.messages.length * 0.15 + 0.5}>
                     {/* Decorative Background Icon */}
                     <div className="absolute -top-6 -right-6 p-4 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity duration-700 pointer-events-none">
                         <Trophy className="w-48 h-48 text-emerald-500 rotate-12" />
@@ -120,7 +75,7 @@ export const StudentDebate = ({ conversation }: StudentDebateProps) => {
                             </p>
                         </div>
                     </div>
-                </motion.div>
+                </VerdictCard>
             </div>
         </section>
     );

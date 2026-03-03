@@ -2,7 +2,12 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, RotateCcw, Cpu, ListOrdered, ArrowRight } from 'lucide-react';
+import { Play, Pause, RotateCcw, Cpu, ListOrdered } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import {
+    SimulatorContainer, SimulatorHeader, SimulatorHeaderControls,
+    SimulatorHeaderActions, SimulatorButton, SimulatorMetric, SimulatorDivider
+} from './ui/simulator';
 
 interface Process {
     id: string;
@@ -119,48 +124,44 @@ export default function RoundRobinAnimation() {
     };
 
     return (
-        <div className="w-full h-full p-4 flex flex-col gap-6">
-            <div className="flex flex-wrap items-center justify-between gap-4 bg-white/5 p-4 rounded-2xl border border-white/10">
-                <div className="flex items-center gap-4">
+        <SimulatorContainer>
+            <SimulatorHeader>
+                <SimulatorHeaderControls>
                     <div className="space-y-1">
-                        <label className="text-[10px] font-bold text-white/40 uppercase">Quantum: {quantum}s</label>
+                        <label className="text-[10px] font-bold text-muted-foreground uppercase">Quantum: {quantum}s</label>
                         <input
                             type="range" min="1" max="5" value={quantum}
                             onChange={(e) => setQuantum(parseInt(e.target.value))}
                             disabled={isPlaying}
-                            className="w-24 h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                            className="w-24 h-1.5 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
                         />
                     </div>
-                    <div className="h-8 w-px bg-white/10" />
-                    <div className="text-center">
-                        <div className="text-[10px] font-bold text-white/40 uppercase tracking-tighter">Global</div>
-                        <div className="text-lg font-black text-white">{totalTime}s</div>
-                    </div>
-                </div>
+                    <SimulatorDivider />
+                    <SimulatorMetric label="Global" value={`${totalTime}s`} />
+                </SimulatorHeaderControls>
 
-                <div className="flex gap-2">
-                    <button
+                <SimulatorHeaderActions>
+                    <SimulatorButton
                         onClick={addProcess}
                         disabled={isPlaying || processes.length >= 6}
-                        className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-[10px] uppercase font-black text-white hover:bg-white/10 disabled:opacity-30 transition-all tracking-widest"
                     >
                         + Proc
-                    </button>
-                    <button
+                    </SimulatorButton>
+                    <SimulatorButton
                         onClick={() => setIsPlaying(!isPlaying)}
-                        className={`p-2 rounded-xl transition-all shadow-lg ${isPlaying ? 'bg-orange-500 shadow-orange-500/20' : 'bg-blue-500 shadow-blue-500/20'}`}
+                        variant={isPlaying ? "destructive" : "play"}
                     >
-                        {isPlaying ? <Pause size={18} className="text-white" /> : <Play size={18} className="text-white" />}
-                    </button>
-                    <button onClick={reset} className="p-2 rounded-xl bg-white/10 text-white hover:bg-white/20">
+                        {isPlaying ? <Pause size={18} /> : <Play size={18} />}
+                    </SimulatorButton>
+                    <SimulatorButton onClick={reset} variant="icon">
                         <RotateCcw size={18} />
-                    </button>
-                </div>
-            </div>
+                    </SimulatorButton>
+                </SimulatorHeaderActions>
+            </SimulatorHeader>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 flex-1">
-                <div className="md:col-span-3 bg-white/5 rounded-3xl border border-white/5 p-4 relative overflow-hidden">
-                    <div className="text-[10px] font-bold text-white/30 uppercase mb-4 flex items-center gap-2">
+                <div className="md:col-span-3 bg-muted/20 rounded-3xl border border-border p-4 relative overflow-hidden">
+                    <div className="text-[10px] font-bold text-muted-foreground uppercase mb-4 flex items-center gap-2">
                         <ListOrdered size={12} /> Cola de Listos
                     </div>
                     <div className="flex flex-wrap gap-3 items-center min-h-[80px]">
@@ -179,7 +180,7 @@ export default function RoundRobinAnimation() {
                                         style={{ backgroundColor: p.color }}
                                     >
                                         {p.name}
-                                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-black/60 backdrop-blur-sm rounded-full text-[8px] flex items-center justify-center border border-white/20">
+                                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-background/80 backdrop-blur-sm rounded-full text-[8px] text-foreground flex items-center justify-center border border-border">
                                             {p.remainingTime}
                                         </div>
                                     </motion.div>
@@ -190,7 +191,7 @@ export default function RoundRobinAnimation() {
                 </div>
 
                 <div className="bg-blue-500/5 rounded-3xl border-2 border-dashed border-blue-500/20 p-4 flex flex-col items-center justify-center gap-3 relative overflow-hidden">
-                    <div className="absolute top-4 left-4 text-[10px] font-bold text-blue-500/50 uppercase flex items-center gap-1">
+                    <div className="absolute top-4 left-4 text-[10px] font-bold text-primary/50 uppercase flex items-center gap-1">
                         <Cpu size={12} /> CPU
                     </div>
                     <AnimatePresence mode="wait">
@@ -207,7 +208,7 @@ export default function RoundRobinAnimation() {
                                 </div>
                             </motion.div>
                         ) : (
-                            <div className="text-white/10 uppercase tracking-widest font-black text-[10px]">Idle</div>
+                            <div className="text-muted-foreground uppercase tracking-widest font-black text-[10px]">Idle</div>
                         )}
                     </AnimatePresence>
                     {runningProcessId && (
@@ -222,22 +223,22 @@ export default function RoundRobinAnimation() {
 
             <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
                 {processes.map(p => (
-                    <div key={p.id} className={`p-2 rounded-2xl border transition-all ${p.status === 'finished' ? 'bg-green-500/10 border-green-500/20 grayscale-50 opacity-40' : 'bg-white/5 border-white/10'}`}>
+                    <div key={p.id} className={`p-2 rounded-2xl border transition-all ${p.status === 'finished' ? 'bg-green-500/10 border-green-500/20 grayscale-50 opacity-40' : 'bg-muted/20 border-border'}`}>
                         <div className="flex justify-between items-center mb-2">
-                            <span className="text-[10px] font-black text-white/60">{p.name}</span>
+                            <span className="text-[10px] font-black text-foreground">{p.name}</span>
                             <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: p.color }} />
                         </div>
-                        <div className="h-1 w-full bg-white/10 rounded-full mb-1">
+                        <div className="h-1 w-full bg-muted rounded-full mb-1">
                             <motion.div
                                 className="h-full rounded-full"
                                 style={{ backgroundColor: p.color }}
                                 animate={{ width: `${(p.remainingTime / p.burstTime) * 100}%` }}
                             />
                         </div>
-                        <div className="text-[8px] text-white/30 text-right font-mono">{p.remainingTime}/{p.burstTime}s</div>
+                        <div className="text-[8px] text-muted-foreground text-right font-mono">{p.remainingTime}/{p.burstTime}s</div>
                     </div>
                 ))}
             </div>
-        </div>
+        </SimulatorContainer>
     );
 }
